@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(pip3 install:*)",
+      "Bash(pip3:*)",
+      "Bash(python3.13:*)",
+      "Bash(python3.11:*)",
+      "Bash(python:*)",
+      "Bash(file:*)",
+      "Read(//mnt/d/dev/projects/halloween/john-claude-docs/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
