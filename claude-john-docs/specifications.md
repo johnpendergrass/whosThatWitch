@@ -2,36 +2,68 @@
 
 ## Project Overview
 
-**Project Name:** Who's That Witch? (Note: Name corrected from earlier "Where's That Witch?")
+**Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** Layout Design & Testing Phase
+**Status:** Baseline/Foundation Stage
 **Date Started:** October 11, 2025
-**Last Updated:** October 11, 2025 - 19:00+
+**Last Updated:** October 12, 2025
 
 ## Project Concept
 
 A matching tile game where players:
 1. Turn over tiles to reveal witch character images
-2. Match two or more tiles together
-3. Identify which witch character is shown
+2. Match two identical tiles together
+3. Identify which witch character is shown (this is the twist!)
 4. Score points based on matches and correct identification
 
-**The Twist:** Not only must players match the images, but they must also correctly identify the witch character to complete the round and earn full points.
+**The Core Gameplay:** Players flip tiles to find matching pairs of witch characters. Once a match is found, they must correctly identify which witch it is to score points and continue.
+
+## Game Container Specifications
+
+**Exact Dimensions:** 950×714 pixels
+- **Width:** 950px (exact)
+- **Height:** 714px (not 720px - see rationale below)
+- **Borders/Padding:** None - the container is completely invisible
+- **Background:** Dark brown (#2a1f1a) for Halloween atmosphere
+
+**Rationale for 714px Height:**
+The game is designed to fit inside a parent Halloween minigames app. The parent app has a center panel of 950×720 pixels, but 3px borders on top and bottom reduce usable space to 950×714. This ensures the game fits perfectly without any overflow or clipping.
+
+## Parent App Integration
+
+This game is NOT standalone - it will be integrated into the Halloween Minigames collection at `/halloween/index.html`.
+
+**Parent App Layout:**
+- Total area: 1280×720 pixels
+- Left nav: 250px (game info, score)
+- Center game area: 950×720px (your game goes here)
+- Right nav: 250px (collapsible game menu)
+
+**Integration Method:**
+- Game will be dynamically loaded as an ES6 module
+- Must export default class with required methods (see specifications-technical.md)
+- Game HTML will be injected into parent's `#game-content` div
 
 ## Asset Inventory
 
 ### Witch Character Images
-- **Total Characters:** 76 unique witch characters
-- **Source Material:** Movies, TV shows, books, anime, and cartoons
-- **Image Formats:** PNG with transparency (RGBA)
-- **Available Sizes:**
-  - Original: Various sizes (approximately square, stored in `assets/witches/`)
-  - Small: 70x70 pixels (stored in `assets/70sized/`) **← Currently using this size**
-  - Small-Medium: 132x132 pixels (stored in `assets/132sized/`)
-  - Medium: 176x176 pixels (stored in `assets/176sized/`)
+
+**Total Characters:** 76 unique witch characters
+**Source Material:** Movies, TV shows, books, anime, and cartoons
+**Image Formats:** PNG with transparency (RGBA)
+
+**Available Sizes:**
+- Original: Various sizes (stored in `assets/witches/`)
+- 166×166 pixels (stored in `assets/166sized/`) - NEW
+- 124×124 pixels (stored in `assets/124sized/`) - NEW
+- 99×99 pixels (stored in `assets/99sized/`) - NEW
+
+**Legacy Sizes (may still exist):**
+- 176×176, 132×132, 70×70 (can be ignored or deleted)
 
 ### Character Roster
+
 Characters include iconic witches such as:
 - Elphaba & Glinda (Wicked, Wizard of Oz, Broadway)
 - Endora, Samantha, Tabitha (Bewitched)
@@ -40,112 +72,65 @@ Characters include iconic witches such as:
 - Wednesday, Morticia, Grandmama (The Addams Family)
 - Willow (Buffy the Vampire Slayer)
 - Kiki (Kiki's Delivery Service)
-- Yababa (Spirited Away)
+- Yubaba (Spirited Away)
 - Melisandre (Game of Thrones)
-- And many more...
+- And 67 more...
 
 ## Design Decisions
 
 ### Visual Design
 
-#### Layout Dimensions
-- **Game Container:** 950×714 pixels (exact, fixed)
-  - **Rationale:** Designed to fit within parent Halloween minigames project center panel (950×720 usable space minus 6px borders)
-  - **Border/Padding:** None on container - completely invisible wrapper
-  - **Background:** Dark brown gradient (#2a1f1a) for Halloween theme
+**Color Palette (Halloween Theme):**
+- Dark browns: #1a1410, #261a10, #2a1f1a, #3d2817
+- Orange accents: #ff6600 (primary), #ff8c42 (highlights)
+- Warm earth tones for inviting Halloween atmosphere
 
-- **Board Container:** 540×540 pixels (square playing area)
-  - **Position:** 370px from left (40px from right), 134px from top (40px from bottom)
-  - **Rationale:** Positioned in lower-right to leave room for scattered tiles on left and around board
-  - **Border:** 3px solid orange (#ff6600)
-  - **Background:** Darker brown (#3d2817)
-  - **Purpose:** Main playing field where matched tiles will be placed (TBD)
-  - **Status:** Dimensions and position under review - may need adjustment for gameplay
+**Typography:**
+- Font family: Arial (simple, readable)
+- Sizes and weights: TBD based on game UI needs
 
-#### Tile Dimensions
-- **Current Size:** 70×70 pixels
-- **Rationale:** Testing phase - verifying visibility and gameplay feel
-- **Question:** Is 70×70 optimal? Could adjust to 80×80 or other size
-- **Count:** 16 tiles currently
-- **Design Goal:** Will resemble ivory dominos when face-down
+### Game Mechanics (To Be Designed)
 
-#### Tile Positioning System
-- **Layout:** Tiles scattered around the left side and below the board
-- **X Range:** 10-330px (left of board)
-- **Y Range:** 140-644px (below board top, no tiles above imaginary top line of board)
-- **Rotation:** -45° to +45° (subtle tilts for organic, playful appearance)
-- **Rationale:** Creates visually interesting, non-grid layout that feels natural and engaging
-- **Method:** Positions saved to JSON file (squarePositions/squarePositions01.json) for consistency
+**Current Decisions:**
+- Match 2 tiles to find a pair
+- Player must identify the witch after matching
+- Scoring based on matches + correct identification
 
-#### Color Palette
-- **Background Gradients:** Dark browns (#1a1410, #261a10, #2a1f1a, #3d2817)
-- **Primary Orange:** #ff6600 (board border, button accent)
-- **Secondary Orange:** #ff8c42 (hover states, lighter accent)
-- **Purpose:** Halloween theme, warm and inviting while maintaining readability
+**Still To Be Determined:**
+- How many tiles on screen? (12? 16? 20?)
+- What tile size to use? (99px? 124px? 166px?)
+- How to handle tile layout? (Grid? Scattered? Organized rows?)
+- Tile back design (face-down appearance)
+- Flip animation style
+- Input method for witch identification (text? multiple choice?)
+- Scoring formula
+- Timer or untimed?
+- Lives/mistakes allowed?
 
-### Game Mechanics (Planned)
+## Current State: Clean Baseline
 
-#### Tile Interaction (Design in Progress)
-1. **Initial State:** Tiles scattered around board, face-down showing domino back design
-2. **Reveal Method:** Player clicks tile to flip it face-up OR drags it to board
-   - **Decision needed:** Which interaction feels better?
-3. **Matching:** Player finds and matches identical or related witch tiles
-   - **Decision needed:** Match 2 or match 3 tiles?
-4. **Identification:** After match, player must identify which witch character
-5. **Scoring:** Points for matches + bonus for correct identification
+As of October 12, 2025, the project consists of:
+- **HTML:** Minimal structure with 950×714 game div
+- **CSS:** Basic styling with Halloween theme and centered container
+- **JavaScript:** Simple initialization that verifies container dimensions
+- **Assets:** 76 witch images ready to be resized to chosen dimensions
 
-#### Matching Rules (To Be Determined)
-- Match identical witch images?
-- Match different images of same witch character?
-- Match witches from same franchise?
-- Exact mechanic still being designed
+The project is a blank canvas ready for game implementation to begin.
 
-### User Interface
+## Development Philosophy
 
-#### Current Development Tools
-- **Position Editor Mode:** Drag-and-drop editor for tile placement
-  - **Purpose:** Manually position tiles for optimal visual layout
-  - **Save Button:** Exports positions to JSON file
-  - **Status:** Active during development, will be removed for production
+Following John's preferences:
+- **Incremental development:** Build and test one feature at a time
+- **Simple, understandable code:** Prioritize readability over performance
+- **Well-documented:** Clear comments explaining logic and decisions
+- **Functional approach:** Prefer functional programming patterns when appropriate
+- **Wait for approval:** Don't implement major features without user confirmation
 
-#### Planned UI Elements (Not Yet Implemented)
-- Score display
-- Witch identification input
-- Instructions panel
-- Reset/new game button
-- Match counter
-- Timer (if timed mode)
+## Next Major Decisions Needed
 
-## Rationale
-
-### Why This Game Size?
-The 950×714 dimension was chosen because this game is designed to be integrated into the parent Halloween minigames collection. The parent project has a center panel of 950×720 pixels (accounting for borders), and this game fits perfectly within that space.
-
-### Why Board in Lower-Right?
-Positioning the board in the lower-right (rather than centered) creates visual asymmetry and leaves ample space for tile scattering. This design choice makes the layout more dynamic and interesting than a centered, symmetrical design.
-
-### Why 70×70 Tiles?
-This size is currently under testing. Rationale:
-- **Visibility:** Large enough to recognize witch characters clearly
-- **Count:** 16 tiles at 70×70 fit comfortably in the available space
-- **Alternative consideration:** Could try 80×80 or other sizes if needed
-- **Question for review:** Does this size feel right for gameplay?
-
-### Why Scatter Layout vs Grid?
-The scattered, rotated tile layout creates a more organic, playful feel that matches the Halloween theme. It feels less rigid and more like scattered dominos on a table - more inviting than a strict grid. The random rotations (-45° to +45°) add to the casual, tactile feeling.
-
-### Why Save Positions?
-Rather than purely random positioning on each load (which could create overlaps or awkward spacing), we manually position tiles once using the drag-and-drop editor, then save those positions. This ensures:
-- Consistent visual layout across sessions
-- No overlapping tiles
-- Optimal spacing and aesthetics
-- Fine-tuned placement that looks intentional
-
-## Current Testing Questions
-
-1. **Board Size:** Is 540×540 the correct size for the playing field?
-2. **Board Position:** Is 40px from right/bottom optimal, or should it be adjusted?
-3. **Tile Size:** Is 70×70 the right size, or should we try a different dimension?
-4. **Tile Count:** Should there be 16 tiles, or more/fewer?
-5. **Tile Design:** What should the back of tiles look like? (Ivory domino appearance planned)
-6. **Interaction:** Should players click to flip OR drag tiles to board OR both?
+1. **Tile count and size:** How many tiles? What size (99/124/166)?
+2. **Layout approach:** Grid layout or custom positioning?
+3. **Tile design:** What should face-down tiles look like?
+4. **Interaction flow:** Exact steps from start to witch identification
+5. **Scoring system:** How are points calculated?
+6. **UI elements:** What displays are needed (score, timer, instructions, etc.)?

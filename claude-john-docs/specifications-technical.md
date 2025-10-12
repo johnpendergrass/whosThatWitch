@@ -2,28 +2,26 @@
 
 ## Project Information
 
-**Project Name:** Who's That Witch? (Corrected from earlier "Where's That Witch?")
-**Technology Stack:** HTML/CSS/JavaScript (Vanilla), Python (tooling)
+**Project Name:** Who's That Witch?
+**Technology Stack:** HTML/CSS/JavaScript (Vanilla), Python (image processing)
+**Development Environment:** Windows 11, WSL2 (Linux)
 **Date Started:** October 11, 2025
-**Last Updated:** October 11, 2025 - 19:00+
+**Last Updated:** October 12, 2025
 
-## Technical Architecture
+## File Structure
 
-### File Structure
 ```
 whosThatWitch/
 ├── index.html                              # Main HTML structure
 ├── css/
 │   └── style.css                           # All game styling
 ├── js/
-│   └── game.js                             # Main game logic (currently position editor mode)
+│   └── game.js                             # Main game logic
 ├── assets/
 │   ├── witches/                            # Original witch images (76 PNGs, various sizes)
-│   ├── 70sized/                            # 70×70 resized images (76 PNGs) **NEW**
-│   ├── 132sized/                           # 132×132 resized images (76 PNGs, ~2.6MB total)
-│   └── 176sized/                           # 176×176 resized images (76 PNGs, ~4.2MB total)
-├── squarePositions/
-│   └── squarePositions01.json              # Saved tile positions
+│   ├── 166sized/                           # 166×166 resized images (76 PNGs) - TO BE CREATED
+│   ├── 124sized/                           # 124×124 resized images (76 PNGs) - TO BE CREATED
+│   └── 99sized/                            # 99×99 resized images (76 PNGs) - TO BE CREATED
 ├── claude-john-docs/                       # Project documentation
 │   ├── BEGINNING SPECS.txt
 │   ├── specifications.md
@@ -32,69 +30,186 @@ whosThatWitch/
 └── resize_witch_images.py                  # Image resizing utility script
 ```
 
-### Technology Decisions
+**Legacy Folders (may exist, can be deleted):**
+- `assets/70sized/`, `assets/132sized/`, `assets/176sized/`
+- `squarePositions/` folder (no longer needed)
 
-**Framework:** Vanilla JavaScript (no framework)
-- Aligns with existing Halloween games project structure
-- Lightweight and easy to understand
+## Technology Decisions
+
+### Framework: Vanilla JavaScript (No Framework)
+**Rationale:**
+- Aligns with parent Halloween games project architecture
+- Lightweight and fast
 - No build process required
+- Easy to understand and maintain
+- Compatible with ES6 module system
 
-**Module System:** Vanilla JavaScript with potential ES6 module export for parent project integration
-- Current implementation: Self-contained vanilla JavaScript
-- Integration with main Halloween games app: Planned for later (will need to export default class)
-- Position editor mode: Currently active for development, will be removed/separated for production
+### Module System: ES6 Modules
+**For parent app integration, the game must:**
+- Export a default class from `js/game.js`
+- Implement required interface methods:
+  - `constructor()` - Initialize game state
+  - `render()` - Return HTML string for game content
+  - `start()` - Called when game becomes active
+  - `stop()` - Called when switching away from game
+  - `getScore()` - Return current score value
 
-### Integration with Main Halloween Games App
+**Parent App Integration Flow:**
+1. Parent app dynamically imports: `import('./games/whosThatWitch/js/game.js')`
+2. Parent instantiates: `new module.default()`
+3. Parent renders: `innerHTML = game.render()`
+4. Parent calls lifecycle: `game.start()` when active, `game.stop()` when switching
 
-If this game is to be integrated with the main Halloween games collection:
-- Must export a default class with required methods: `constructor()`, `render()`, `start()`, `stop()`, `getScore()`
-- Will be dynamically imported from `js/games/` directory
-- Must update `main.js` with game registration
+### Development Approach
 
-### Development Environment
+**Current State: Standalone Development**
+- Developing as standalone game in `index.html`
+- Testing locally with `python3 -m http.server 8000`
+- Will later wrap in module export for parent app integration
 
-**Local Server:**
+**Future Integration:**
+- Will need to modify `js/game.js` to export ES6 class
+- OR create separate `whosThatWitch.js` wrapper module
+- Register game in parent's `main.js` (add to gameIds, gameNames, gameDescriptions)
+
+## Development Environment
+
+### Local Development Server
 ```bash
+# From project root directory
 python3 -m http.server 8000
+
+# Then visit:
+http://localhost:8000
 ```
 
-**Browser Testing:** Chrome/Firefox/Edge recommended
+### Browser Testing
+- Chrome, Firefox, or Edge recommended
+- ES6 support required (all modern browsers)
+- No transpilation needed
 
-### Asset Processing
+### File Editing
+- Use any text editor
+- No build process - direct file editing
+- Refresh browser to see changes
 
-**Image Resizing Pipeline:**
-- **Tool:** Python script using Pillow (PIL) library v11.3.0
-- **Resampling Method:** LANCZOS (high-quality downsampling)
-- **Processing:** Batch processing of all 76 images in single run
-- **Naming Convention:** Original filename with size suffix (e.g., `_132` or `_176`)
-- **Format Preservation:** RGBA PNG format maintained for transparency support
+## Asset Processing
 
-**Image Processing Script (`resize_witch_images.py`):**
-```python
-# Key features:
-- Reads all PNGs from assets/witches/
-- Resizes to exact square dimensions (may squash/stretch slightly)
-- Outputs to both 132sized and 176sized folders simultaneously
-- Progress reporting during batch processing
-- Error handling for individual file failures
+### Image Resizing Pipeline
+
+**Tool:** Python script using Pillow (PIL) library
+**Script:** `resize_witch_images.py`
+**Method:** LANCZOS resampling (high-quality downsampling)
+
+**Current Configuration:**
+Resizes all 76 images from `assets/witches/` to three sizes:
+- 166×166 pixels → `assets/166sized/` folder (filename + `_166` suffix)
+- 124×124 pixels → `assets/124sized/` folder (filename + `_124` suffix)
+- 99×99 pixels → `assets/99sized/` folder (filename + `_99` suffix)
+
+**Running the Script:**
+```bash
+python3 resize_witch_images.py
 ```
 
-**Image Specifications:**
-- Original images: Approximately square, various dimensions
-- Resized images: Exact square dimensions (132x132 or 176x176)
-- Quality: LANCZOS resampling ensures minimal quality loss
-- File size: Compressed PNG format, ~34KB average per 132px image, ~56KB average per 176px image
-
-### Future Considerations
-
-*Technical decisions and implementation notes to be documented as development progresses*
+**Output:**
+- Creates 76 images per size (228 total images)
+- Preserves PNG transparency (RGBA format)
+- Filenames: `[original_name]_[size].png`
+- Example: `Elphaba(Broadway_Oz)01_166.png`
 
 **Reusability:**
-- The `resize_witch_images.py` script can be reused if additional witch images are added to the collection
-- Simply add new PNGs to `assets/witches/` and re-run the script
+The script can be re-run if:
+- New witch images are added to `assets/witches/`
+- Different sizes are needed (edit script and re-run)
+- Images need to be regenerated for any reason
 
-## Known Technical Constraints
+### Image Specifications
 
+**Format:** PNG with alpha transparency
+**Color Mode:** RGBA
+**Aspect Ratio:** Exact squares (may slightly stretch/squash originals)
+**Quality:** LANCZOS resampling ensures minimal quality loss
+
+## Technical Constraints
+
+### Hard Requirements
 - No external dependencies (vanilla JS only)
+- Must fit in 950×714 pixel container (exact)
 - Must be compatible with GitHub Pages
-- Target game area: 1280x720 (based on main Halloween games app)
+- Must integrate with parent Halloween app architecture
+
+### Browser Support
+- Modern browsers with ES6 support
+- No Internet Explorer support needed
+- CSS Grid and Flexbox support required
+
+## Code Standards
+
+### JavaScript Style
+- Clear, descriptive variable names
+- Functional programming approach preferred
+- Comprehensive comments explaining "why" not just "what"
+- Simple algorithms over complex optimizations
+- One feature at a time, well-tested
+
+### CSS Style
+- Mobile-first approach (even though this is fixed-size game)
+- Clear class names
+- Comments for major sections
+- Halloween color palette consistency
+
+### HTML Structure
+- Semantic HTML5
+- Minimal markup
+- Clear hierarchy
+- Accessibility considerations where appropriate
+
+## Integration Checklist (For Future)
+
+When ready to integrate with parent app:
+- [ ] Create ES6 module export wrapper
+- [ ] Implement required class interface (constructor, render, start, stop, getScore)
+- [ ] Test in parent app's `js/games/` directory
+- [ ] Update parent's `main.js`:
+  - [ ] Add to `gameIds` array
+  - [ ] Add to `gameNames` object
+  - [ ] Add to `gameDescriptions` object
+- [ ] Test game switching and lifecycle methods
+- [ ] Verify 950×720 fit in parent's center panel
+- [ ] Test with panel expanded and collapsed
+
+## Performance Considerations
+
+**Image Loading:**
+- Lazy loading if many images
+- Preload required images on game start
+- Consider using CSS sprites if performance issues
+
+**DOM Manipulation:**
+- Minimize reflows and repaints
+- Use document fragments for bulk DOM creation
+- Event delegation for dynamic elements
+
+**Memory Management:**
+- Clean up event listeners in `stop()` method
+- Clear intervals/timeouts when switching games
+- Release large objects when not needed
+
+## Known Technical Details
+
+**Parent App Game Container:**
+- ID: `#game-content`
+- Dimensions: 950×720px
+- Background: `linear-gradient(135deg, #1a1410 0%, #261a10 100%)`
+- Uses flexbox centering for content
+
+**Game Communication:**
+- Global reference: `window.gameApp`
+- Score updates: `window.gameApp.updateScore(newScore)`
+- UI updates handled by parent app
+
+**Panel Behavior:**
+- Title screen (game-0): Panel auto-expands
+- All games: Panel auto-collapses for more space
+- This happens automatically on game switch

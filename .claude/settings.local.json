@@ -8,7 +8,8 @@
       "Bash(python3.11:*)",
       "Bash(python:*)",
       "Bash(file:*)",
-      "Read(//mnt/d/dev/projects/halloween/john-claude-docs/**)"
+      "Read(//mnt/d/dev/projects/halloween/john-claude-docs/**)",
+      "Read(//mnt/d/dev/projects/halloween/**)"
     ],
     "deny": [],
     "ask": []

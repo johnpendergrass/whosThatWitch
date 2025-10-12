@@ -15,70 +15,10 @@ body {
     align-items: center;
 }
 
-/* Game container - exactly 950x714 pixels, no borders or padding */
+/* Game container - exactly 950x714 pixels */
 #game {
     width: 950px;
     height: 714px;
     background: #2a1f1a;
     position: relative;
-}
-
-/* Visual indicator for development - remove later */
-#game::before {
-    content: 'Game Area: 950 x 714';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #ff8c42;
-    font-size: 24px;
-    opacity: 0.3;
-    pointer-events: none;
-}
-
-/* Board container - 540x540 with 3px orange border, positioned 40px from right and bottom */
-#board {
-    position: absolute;
-    left: 370px;  /* 950 - 540 - 40 = 370 */
-    top: 134px;   /* 714 - 540 - 40 = 134 */
-    width: 540px;
-    height: 540px;
-    border: 3px solid #ff6600;
-    background: #3d2817;
-}
-
-/* Random squares for testing layout - draggable with images */
-.random-square {
-    position: absolute;
-    width: 70px;
-    height: 70px;
-    cursor: move;
-    user-select: none;
-    overflow: hidden;
-}
-
-.random-square.dragging {
-    opacity: 0.8;
-    cursor: grabbing;
-    z-index: 1000;
-}
-
-/* Save button styling */
-#save-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 10px 20px;
-    background: #ff6600;
-    color: white;
-    border: 2px solid #ff8c42;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    z-index: 2000;
-}
-
-#save-button:hover {
-    background: #ff8c42;
 }
