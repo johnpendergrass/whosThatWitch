@@ -1,24 +1,74 @@
 /* CSS Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* Body styling */
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #1a1410 0%, #261a10 50%, #1a1410 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  font-family: "Arial", sans-serif;
+  background: #000000;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Game container - exactly 950x714 pixels */
-#game {
-    width: 950px;
-    height: 714px;
-    background: #2a1f1a;
-    position: relative;
+#screen {
+  width: 950px;
+  height: 714px;
+  background: #000000;
+  position: relative;
+  border: 3px solid #ffffff;
+}
+
+/* Test buttons */
+.test-buttons {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.test-buttons button {
+  padding: 10px 20px;
+  background: #ff6600;
+  color: white;
+  border: 2px solid #ff8c42;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.test-buttons button:hover {
+  background: #ff8c42;
+}
+
+/* Board container - 502x502 pixels, positioned bottom-left */
+#board {
+  position: absolute;
+  width: 502px;
+  height: 502px;
+  left: 20px;
+  bottom: 20px;
+  background: #553963;
+  box-sizing: content-box;
+  border: 15px ridge #7b2d8e;
+}
+
+/* Grid lines */
+.grid-line {
+  position: absolute;
+  background-color: white;
+}
+
+/* Tile images */
+.tile-image {
+  position: absolute;
 }

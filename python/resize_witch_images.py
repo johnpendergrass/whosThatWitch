@@ -19,11 +19,11 @@ def resize_images():
     """
     Main function to resize all witch images to all three target sizes.
     """
-    # Define folder paths
-    source_folder = Path("assets/witches")
-    folder_166 = Path("assets/166sized")
-    folder_124 = Path("assets/124sized")
-    folder_99 = Path("assets/99sized")
+    # Define folder paths (relative to python subfolder)
+    source_folder = Path("../assets")
+    folder_166 = Path("../assets/166sized")
+    folder_124 = Path("../assets/124sized")
+    folder_99 = Path("../assets/99sized")
 
     # Get all PNG files from source folder
     png_files = list(source_folder.glob("*.png"))

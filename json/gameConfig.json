@@ -1,0 +1,36 @@
+{
+  "theme": "witches",
+  "assetFolder": "assets",
+  "folderPattern": "{size}sized",
+  "filePattern": "{basename}_{size}.png",
+  "imageListFile": "json/witchesImages.json",
+  "gridConfigFile": "json/tileSizes.json",
+  "boardDimensions": {
+    "width": 502,
+    "height": 502
+  },
+  "difficulties": [
+    {
+      "id": "hardTiles",
+      "label": "HARD",
+      "buttonId": "btn-hard",
+      "bombTiles": 3,
+      "bonusTiles": 1
+    },
+    {
+      "id": "mediumTiles",
+      "label": "MEDIUM",
+      "buttonId": "btn-medium",
+      "bombTiles": 2,
+      "bonusTiles": 1
+    },
+    {
+      "id": "easyTiles",
+      "label": "EASY",
+      "buttonId": "btn-easy",
+      "bombTiles": 1,
+      "bonusTiles": 1
+    }
+  ],
+  "defaultDifficulty": "mediumTiles"
+}
