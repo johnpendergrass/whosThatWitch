@@ -3,6 +3,7 @@
     "Elphaba": [
       {
         "filename": "Elphaba(Broadway_Oz)01",
+        "group": 1,
         "name_text": "Elphaba",
         "description_text": "This is Elphaba, from the 2003 Broadway show Wicked!",
         "easy_path": "99sized",
@@ -11,6 +12,7 @@
       },
       {
         "filename": "Elphaba(Broadway_Oz)02",
+        "group": 1,
         "name_text": "Elphaba",
         "description_text": "This is Elphaba, from the 2003 Broadway show Wicked!",
         "easy_path": "99sized",
@@ -19,6 +21,7 @@
       },
       {
         "filename": "Elphaba(Wicked!)01",
+        "group": 1,
         "name_text": "Elphaba",
         "description_text": "This is Elphaba, from the 2024 movie 'Wicked'.",
         "easy_path": "99sized",
@@ -27,6 +30,7 @@
       },
       {
         "filename": "Elphaba(Wicked!)02",
+        "group": 1,
         "name_text": "Elphaba",
         "description_text": "This is Elphaba, from the 2024 movie 'Wicked'.",
         "easy_path": "99sized",
@@ -35,6 +39,7 @@
       },
       {
         "filename": "Elphaba(Wicked!)03",
+        "group": 1,
         "name_text": "Elphaba",
         "description_text": "This is Elphaba, from the 2024 movie 'Wicked'.",
         "easy_path": "99sized",
@@ -43,6 +48,7 @@
       },
       {
         "filename": "Elphaba(Wicked!)04",
+        "group": 1,
         "name_text": "Elphaba",
         "description_text": "This is Elphaba, from the 2024 movie 'Wicked'.",
         "easy_path": "99sized",
@@ -51,6 +57,7 @@
       },
       {
         "filename": "Wicked_Witch_of_The_West(Wizard_of_Oz)01",
+        "group": 1,
         "name_text": "Wicked Witch of the West",
         "description_text": "This is the Wicked Witch of the West, from the 1939 movie 'The Wizard of Oz'.",
         "easy_path": "99sized",
@@ -59,6 +66,7 @@
       },
       {
         "filename": "Wicked_Witch_of_The_West(Wizard_of_Oz)02",
+        "group": 1,
         "name_text": "Wicked Witch of the West",
         "description_text": "This is the Wicked Witch of the West, from the 1939 movie 'The Wizard of Oz'.",
         "easy_path": "99sized",
@@ -67,6 +75,7 @@
       },
       {
         "filename": "Wicked_Witch_of_The_West(Wizard_of_Oz)03",
+        "group": 1,
         "name_text": "Wicked Witch of the West",
         "description_text": "This is the Wicked Witch of the West, from the 1939 movie 'The Wizard of Oz'.",
         "easy_path": "99sized",
@@ -77,6 +86,7 @@
     "Galinda": [
       {
         "filename": "Glinda(Broadway_Oz)01",
+        "group": 1,
         "name_text": "Galinda",
         "description_text": "This is Galinda, the Good Witch of the North, from the Broadway show Wicked!",
         "easy_path": "99sized",
@@ -85,6 +95,7 @@
       },
       {
         "filename": "Glinda(Broadway_Oz)02",
+        "group": 1,
         "name_text": "Galinda",
         "description_text": "This is Galinda, the Good Witch of the North, from the Broadway show Wicked!",
         "easy_path": "99sized",
@@ -93,6 +104,7 @@
       },
       {
         "filename": "Glinda(Broadway_Oz)03",
+        "group": 1,
         "name_text": "Galinda",
         "description_text": "This is Galinda, the Good Witch of the North, from the Broadway show Wicked!",
         "easy_path": "99sized",
@@ -101,6 +113,7 @@
       },
       {
         "filename": "Glinda(Broadway_Oz)04",
+        "group": 1,
         "name_text": "Galinda",
         "description_text": "This is Galinda, the Good Witch of the North, from the Broadway show Wicked!",
         "easy_path": "99sized",
@@ -109,6 +122,7 @@
       },
       {
         "filename": "Glinda(Wizard_of_Oz)01",
+        "group": 1,
         "name_text": "Glinda",
         "description_text": "This is Glinda, the Good Witch of the North, from the 1939 movie 'The Wizard of Oz'.",
         "easy_path": "99sized",
@@ -117,6 +131,7 @@
       },
       {
         "filename": "Glinda(Wizard_of_Oz)02",
+        "group": 1,
         "name_text": "Glinda",
         "description_text": "This is Glinda, the Good Witch of the North, from the 1939 movie 'The Wizard of Oz'.",
         "easy_path": "99sized",
@@ -125,6 +140,7 @@
       },
       {
         "filename": "Glinda(Wizard_of_Oz)03",
+        "group": 1,
         "name_text": "Glinda",
         "description_text": "This is Glinda, the Good Witch of the North, from the 1939 movie 'The Wizard of Oz'.",
         "easy_path": "99sized",
@@ -133,6 +149,7 @@
       },
       {
         "filename": "Glinda(Wicked!)01",
+        "group": 1,
         "name_text": "Galinda",
         "description_text": "This is Galinda, the Good Witch, from the 2024 movie 'Wicked'.",
         "easy_path": "99sized",
@@ -141,6 +158,7 @@
       },
       {
         "filename": "Glinda(Wicked!)02",
+        "group": 1,
         "name_text": "Galinda",
         "description_text": "This is Galinda, the Good Witch, from the 2024 movie 'Wicked'.",
         "easy_path": "99sized",
@@ -151,6 +169,7 @@
     "Endora": [
       {
         "filename": "Endora(Bewitched)01",
+        "group": 2,
         "name_text": "Endora",
         "description_text": "Endora, Samantha's mother, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -159,6 +178,7 @@
       },
       {
         "filename": "Endora(Bewitched)02",
+        "group": 2,
         "name_text": "Endora",
         "description_text": "Endora, Samantha's mother, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -167,6 +187,7 @@
       },
       {
         "filename": "Endora(Bewitched)03",
+        "group": 2,
         "name_text": "Endora",
         "description_text": "Endora, Samantha's mother, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -177,6 +198,7 @@
     "Grandmama": [
       {
         "filename": "Grandmama(The_Addams_Family)01",
+        "group": 3,
         "name_text": "Grandmama",
         "description_text": "Grandmama Addams, the family matriarch, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -185,6 +207,7 @@
       },
       {
         "filename": "Grandmama(The_Addams_Family)02",
+        "group": 3,
         "name_text": "Grandmama",
         "description_text": "Grandmama Addams, the family matriarch, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -193,6 +216,7 @@
       },
       {
         "filename": "Grandmama(The_Addams_Family)03",
+        "group": 3,
         "name_text": "Grandmama",
         "description_text": "Grandmama Addams, the family matriarch, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -203,6 +227,7 @@
     "Hermione": [
       {
         "filename": "Hermione(Harry_Potter)01",
+        "group": 6,
         "name_text": "Hermione Granger",
         "description_text": "Hermione Granger, from the Harry Potter series",
         "easy_path": "99sized",
@@ -211,6 +236,7 @@
       },
       {
         "filename": "Hermione(Harry_Potter)02",
+        "group": 6,
         "name_text": "Hermione Granger",
         "description_text": "Hermione Granger, from the Harry Potter series",
         "easy_path": "99sized",
@@ -219,6 +245,7 @@
       },
       {
         "filename": "Hermione(Harry_Potter)03",
+        "group": 6,
         "name_text": "Hermione Granger",
         "description_text": "Hermione Granger, from the Harry Potter series",
         "easy_path": "99sized",
@@ -229,6 +256,7 @@
     "Jadis": [
       {
         "filename": "Jadis_The_White_Witch(Narnia)01",
+        "group": 7,
         "name_text": "Jadis, The White Witch",
         "description_text": "Jadis, the White Witch, from 'The Chronicles of Narnia'",
         "easy_path": "99sized",
@@ -237,6 +265,7 @@
       },
       {
         "filename": "Jadis_The_White_Witch(Narnia)02",
+        "group": 7,
         "name_text": "Jadis, The White Witch",
         "description_text": "Jadis, the White Witch, from 'The Chronicles of Narnia'",
         "easy_path": "99sized",
@@ -245,6 +274,7 @@
       },
       {
         "filename": "Jadis_The_White_Witch(Narnia)03",
+        "group": 7,
         "name_text": "Jadis, The White Witch",
         "description_text": "Jadis, the White Witch, from 'The Chronicles of Narnia'",
         "easy_path": "99sized",
@@ -255,6 +285,7 @@
     "Kiki": [
       {
         "filename": "Kiki(Kiki's_Delivery_Service)01",
+        "group": 5,
         "name_text": "Kiki",
         "description_text": "Kiki, the young witch, from Studio Ghibli's 'Kiki's Delivery Service'",
         "easy_path": "99sized",
@@ -263,6 +294,7 @@
       },
       {
         "filename": "Kiki(Kiki's_Delivery_Service)02",
+        "group": 5,
         "name_text": "Kiki",
         "description_text": "Kiki, the young witch, from Studio Ghibli's 'Kiki's Delivery Service'",
         "easy_path": "99sized",
@@ -271,6 +303,7 @@
       },
       {
         "filename": "Kiki(Kiki's_Delivery_Service)03",
+        "group": 5,
         "name_text": "Kiki",
         "description_text": "Kiki, the young witch, from Studio Ghibli's 'Kiki's Delivery Service'",
         "easy_path": "99sized",
@@ -280,7 +313,8 @@
     ],
     "Jiji": [
       {
-        "filename": "Jiji(Kiki's_Delivery_Service)01",
+        "filename": "JiJi(Kiki's_Delivery_Service)01",
+        "group": 5,
         "name_text": "Jiji",
         "description_text": "Jiji, Kiki's cat familiar, from Studio Ghibli's 'Kiki's Delivery Service'",
         "easy_path": "99sized",
@@ -288,7 +322,8 @@
         "hard_path": "166sized"
       },
       {
-        "filename": "Jiji(Kiki's_Delivery_Service)02",
+        "filename": "JiJi(Kiki's_Delivery_Service)02",
+        "group": 5,
         "name_text": "Jiji",
         "description_text": "Jiji, Kiki's cat familiar, from Studio Ghibli's 'Kiki's Delivery Service'",
         "easy_path": "99sized",
@@ -296,17 +331,19 @@
         "hard_path": "166sized"
       },
       {
-        "filename": "Jiji(Kiki's_Delivery_Service)03",
+        "filename": "JiJi(Kiki's_Delivery_Service)03",
+        "group": 5,
         "name_text": "Jiji",
         "description_text": "Jiji, Kiki's cat familiar, from Studio Ghibli's 'Kiki's Delivery Service'",
         "easy_path": "99sized",
         "medium_path": "124sized",
         "hard_path": "166sized"
-      },
+      }
     ],
     "Lafayette": [
       {
         "filename": "Lafayette_Reynolds(True_Blood)01",
+        "group": 8,
         "name_text": "Lafayette Reynolds",
         "description_text": "Lafayette Reynolds, the powerful medium, from the TV show 'True Blood'",
         "easy_path": "99sized",
@@ -315,6 +352,7 @@
       },
       {
         "filename": "Lafayette_Reynolds(True_Blood)02",
+        "group": 8,
         "name_text": "Lafayette Reynolds",
         "description_text": "Lafayette Reynolds, the powerful medium, from the TV show 'True Blood'",
         "easy_path": "99sized",
@@ -323,6 +361,7 @@
       },
       {
         "filename": "Lafayette_Reynolds(True_Blood)03",
+        "group": 8,
         "name_text": "Lafayette Reynolds",
         "description_text": "Lafayette Reynolds, the powerful medium, from the TV show 'True Blood'",
         "easy_path": "99sized",
@@ -333,6 +372,7 @@
     "Melisandre": [
       {
         "filename": "Melisandre(Game_of_Thrones)01",
+        "group": 9,
         "name_text": "Melisandre",
         "description_text": "Melisandre, the Red Priestess, from 'Game of Thrones'",
         "easy_path": "99sized",
@@ -341,6 +381,7 @@
       },
       {
         "filename": "Melisandre(Game_of_Thrones)02",
+        "group": 9,
         "name_text": "Melisandre",
         "description_text": "Melisandre, the Red Priestess, from 'Game of Thrones'",
         "easy_path": "99sized",
@@ -349,6 +390,7 @@
       },
       {
         "filename": "Melisandre(Game_of_Thrones)03",
+        "group": 9,
         "name_text": "Melisandre",
         "description_text": "Melisandre, the Red Priestess, from 'Game of Thrones'",
         "easy_path": "99sized",
@@ -359,6 +401,7 @@
     "Mildred": [
       {
         "filename": "Mildred_Hubble(The_Worst_Witch)01",
+        "group": 10,
         "name_text": "Mildred Hubble",
         "description_text": "Mildred Hubble, from 'The Worst Witch' book and TV series",
         "easy_path": "99sized",
@@ -367,6 +410,7 @@
       },
       {
         "filename": "Mildred_Hubble(The_Worst_Witch)02",
+        "group": 10,
         "name_text": "Mildred Hubble",
         "description_text": "Mildred Hubble, from 'The Worst Witch' book and TV series",
         "easy_path": "99sized",
@@ -375,6 +419,7 @@
       },
       {
         "filename": "Mildred_Hubble(The_Worst_Witch)03",
+        "group": 10,
         "name_text": "Mildred Hubble",
         "description_text": "Mildred Hubble, from 'The Worst Witch' book and TV series",
         "easy_path": "99sized",
@@ -385,6 +430,7 @@
     "Morticia": [
       {
         "filename": "Morticia(The_Addams_Family)01",
+        "group": 3,
         "name_text": "Morticia Addams",
         "description_text": "Morticia Addams, the gothic matriarch, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -393,6 +439,7 @@
       },
       {
         "filename": "Morticia(The_Addams_Family)02",
+        "group": 3,
         "name_text": "Morticia Addams",
         "description_text": "Morticia Addams, the gothic matriarch, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -401,6 +448,7 @@
       },
       {
         "filename": "Morticia(The_Addams_Family)03",
+        "group": 3,
         "name_text": "Morticia Addams",
         "description_text": "Morticia Addams, the gothic matriarch, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -411,6 +459,7 @@
     "McGonagall": [
       {
         "filename": "Professor_McGonagall(Harry_Potter)01",
+        "group": 11,
         "name_text": "Professor McGonagall",
         "description_text": "Professor Minerva McGonagall, from the Harry Potter series",
         "easy_path": "99sized",
@@ -419,6 +468,7 @@
       },
       {
         "filename": "Professor_McGonagall(Harry_Potter)02",
+        "group": 11,
         "name_text": "Professor McGonagall",
         "description_text": "Professor Minerva McGonagall, from the Harry Potter series",
         "easy_path": "99sized",
@@ -427,6 +477,7 @@
       },
       {
         "filename": "Professor_McGonagall(Harry_Potter)03",
+        "group": 11,
         "name_text": "Professor McGonagall",
         "description_text": "Professor Minerva McGonagall, from the Harry Potter series",
         "easy_path": "99sized",
@@ -437,6 +488,7 @@
     "Sabrina": [
       {
         "filename": "Sabrina(Sabrina_The_Teenage_Witch)01",
+        "group": 4,
         "name_text": "Sabrina Spellman",
         "description_text": "Sabrina Spellman, the teenage witch, from 'Sabrina the Teenage Witch'",
         "easy_path": "99sized",
@@ -445,6 +497,7 @@
       },
       {
         "filename": "Sabrina(Sabrina_The_Teenage_Witch)02",
+        "group": 4,
         "name_text": "Sabrina Spellman",
         "description_text": "Sabrina Spellman, the teenage witch, from 'Sabrina the Teenage Witch'",
         "easy_path": "99sized",
@@ -453,6 +506,7 @@
       },
       {
         "filename": "Sabrina(Sabrina_The_Teenage_Witch)03",
+        "group": 4,
         "name_text": "Sabrina Spellman",
         "description_text": "Sabrina Spellman, the teenage witch, from 'Sabrina the Teenage Witch'",
         "easy_path": "99sized",
@@ -461,6 +515,7 @@
       },
       {
         "filename": "Sabrina(Sabrina_The_Teenage_Witch)04",
+        "group": 4,
         "name_text": "Sabrina Spellman",
         "description_text": "Sabrina Spellman, the teenage witch, from 'Sabrina the Teenage Witch'",
         "easy_path": "99sized",
@@ -471,6 +526,7 @@
     "Salem": [
       {
         "filename": "Salem(Sabrina_The_Teenage_Witch)01",
+        "group": 4,
         "name_text": "Salem Saberhagen",
         "description_text": "Salem, Sabrina's wise-cracking cat familiar, from 'Sabrina the Teenage Witch'",
         "easy_path": "99sized",
@@ -479,6 +535,7 @@
       },
       {
         "filename": "Salem(Sabrina_The_Teenage_Witch)02",
+        "group": 4,
         "name_text": "Salem Saberhagen",
         "description_text": "Salem, Sabrina's wise-cracking cat familiar, from 'Sabrina the Teenage Witch'",
         "easy_path": "99sized",
@@ -487,6 +544,7 @@
       },
       {
         "filename": "Salem(Sabrina_The_Teenage_Witch)03",
+        "group": 4,
         "name_text": "Salem Saberhagen",
         "description_text": "Salem, Sabrina's wise-cracking cat familiar, from 'Sabrina the Teenage Witch'",
         "easy_path": "99sized",
@@ -497,6 +555,7 @@
     "Samantha": [
       {
         "filename": "Samantha(Bewitched)01",
+        "group": 2,
         "name_text": "Samantha Stephens",
         "description_text": "Samantha Stephens, the suburban witch, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -505,6 +564,7 @@
       },
       {
         "filename": "Samantha(Bewitched)02",
+        "group": 2,
         "name_text": "Samantha Stephens",
         "description_text": "Samantha Stephens, the suburban witch, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -513,6 +573,7 @@
       },
       {
         "filename": "Samantha(Bewitched)03",
+        "group": 2,
         "name_text": "Samantha Stephens",
         "description_text": "Samantha Stephens, the suburban witch, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -521,6 +582,7 @@
       },
       {
         "filename": "Samantha(Bewitched)04",
+        "group": 2,
         "name_text": "Samantha Stephens",
         "description_text": "Samantha Stephens, the suburban witch, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -529,6 +591,7 @@
       },
       {
         "filename": "Samantha(Bewitched)05",
+        "group": 2,
         "name_text": "Samantha Stephens",
         "description_text": "Samantha Stephens, the suburban witch, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -537,6 +600,7 @@
       },
       {
         "filename": "Samantha(Bewitched)06",
+        "group": 2,
         "name_text": "Samantha Stephens",
         "description_text": "Samantha Stephens, the suburban witch, from the TV show 'Bewitched'",
         "easy_path": "99sized",
@@ -547,6 +611,7 @@
     "Tabitha": [
       {
         "filename": "Tabitha(Bewitched)01",
+        "group": 2,
         "name_text": "Tabitha Stephens",
         "description_text": "Tabitha Stephens, Samantha's daughter, from 'Bewitched'",
         "easy_path": "99sized",
@@ -555,6 +620,7 @@
       },
       {
         "filename": "Tabitha(Bewitched)02",
+        "group": 2,
         "name_text": "Tabitha Stephens",
         "description_text": "Tabitha Stephens, Samantha's daughter, from 'Bewitched'",
         "easy_path": "99sized",
@@ -563,6 +629,7 @@
       },
       {
         "filename": "Tabitha(Bewitched)03",
+        "group": 2,
         "name_text": "Tabitha Stephens",
         "description_text": "Tabitha Stephens, Samantha's daughter, from 'Bewitched'",
         "easy_path": "99sized",
@@ -573,6 +640,7 @@
     "Wednesday": [
       {
         "filename": "Wednesday(The_Addams_Family)01",
+        "group": 3,
         "name_text": "Wednesday Addams",
         "description_text": "Wednesday Addams, the dark daughter, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -581,6 +649,7 @@
       },
       {
         "filename": "Wednesday(The_Addams_Family)02",
+        "group": 3,
         "name_text": "Wednesday Addams",
         "description_text": "Wednesday Addams, the dark daughter, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -589,6 +658,7 @@
       },
       {
         "filename": "Wednesday(The_Addams_Family)03",
+        "group": 3,
         "name_text": "Wednesday Addams",
         "description_text": "Wednesday Addams, the dark daughter, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -597,6 +667,7 @@
       },
       {
         "filename": "Wednesday(The_Addams_Family)04",
+        "group": 3,
         "name_text": "Wednesday Addams",
         "description_text": "Wednesday Addams, the dark daughter, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -605,6 +676,7 @@
       },
       {
         "filename": "Wednesday(The_Addams_Family)05",
+        "group": 3,
         "name_text": "Wednesday Addams",
         "description_text": "Wednesday Addams, the dark daughter, from 'The Addams Family'",
         "easy_path": "99sized",
@@ -615,6 +687,7 @@
     "Wendy": [
       {
         "filename": "Wendy_The_Good_Little_Witch(comix)01",
+        "group": 12,
         "name_text": "Wendy the Good Little Witch",
         "description_text": "Wendy, the Good Little Witch, from Harvey Comics",
         "easy_path": "99sized",
@@ -623,6 +696,7 @@
       },
       {
         "filename": "Wendy_The_Good_Little_Witch(comix)02",
+        "group": 12,
         "name_text": "Wendy the Good Little Witch",
         "description_text": "Wendy, the Good Little Witch, from Harvey Comics",
         "easy_path": "99sized",
@@ -631,6 +705,7 @@
       },
       {
         "filename": "Wendy_The_Good_Little_Witch(comix)03",
+        "group": 12,
         "name_text": "Wendy the Good Little Witch",
         "description_text": "Wendy, the Good Little Witch, from Harvey Comics",
         "easy_path": "99sized",
@@ -641,6 +716,7 @@
     "Willow": [
       {
         "filename": "Willow(Buffy_the_Vampire_Slayer)01",
+        "group": 13,
         "name_text": "Willow Rosenberg",
         "description_text": "Willow Rosenberg, the powerful witch, from 'Buffy the Vampire Slayer'",
         "easy_path": "99sized",
@@ -649,6 +725,7 @@
       },
       {
         "filename": "Willow(Buffy_the_Vampire_Slayer)02",
+        "group": 13,
         "name_text": "Willow Rosenberg",
         "description_text": "Willow Rosenberg, the powerful witch, from 'Buffy the Vampire Slayer'",
         "easy_path": "99sized",
@@ -657,6 +734,7 @@
       },
       {
         "filename": "Willow(Buffy_the_Vampire_Slayer)03",
+        "group": 13,
         "name_text": "Willow Rosenberg",
         "description_text": "Willow Rosenberg, the powerful witch, from 'Buffy the Vampire Slayer'",
         "easy_path": "99sized",
@@ -667,6 +745,7 @@
     "WitchHazel": [
       {
         "filename": "Witch_Hazel(Looney_Tunes)01",
+        "group": 14,
         "name_text": "Witch Hazel",
         "description_text": "Witch Hazel, from Looney Tunes cartoons",
         "easy_path": "99sized",
@@ -675,6 +754,7 @@
       },
       {
         "filename": "Witch_Hazel(Looney_Tunes)02",
+        "group": 14,
         "name_text": "Witch Hazel",
         "description_text": "Witch Hazel, from Looney Tunes cartoons",
         "easy_path": "99sized",
@@ -683,6 +763,7 @@
       },
       {
         "filename": "Witch_Hazel(Looney_Tunes)03",
+        "group": 14,
         "name_text": "Witch Hazel",
         "description_text": "Witch Hazel, from Looney Tunes cartoons",
         "easy_path": "99sized",
@@ -693,6 +774,7 @@
     "Yubaba": [
       {
         "filename": "Yababa(Spirited_Away)01",
+        "group": 15,
         "name_text": "Yubaba",
         "description_text": "Yubaba, the bathhouse owner, from Studio Ghibli's 'Spirited Away'",
         "easy_path": "99sized",
@@ -701,6 +783,7 @@
       },
       {
         "filename": "Yababa(Spirited_Away)02",
+        "group": 15,
         "name_text": "Yubaba",
         "description_text": "Yubaba, the bathhouse owner, from Studio Ghibli's 'Spirited Away'",
         "easy_path": "99sized",
@@ -709,6 +792,7 @@
       },
       {
         "filename": "Yababa(Spirited_Away)03",
+        "group": 15,
         "name_text": "Yubaba",
         "description_text": "Yubaba, the bathhouse owner, from Studio Ghibli's 'Spirited Away'",
         "easy_path": "99sized",
@@ -719,6 +803,7 @@
     "Agatha_Harkness": [
       {
         "filename": "Agatha_Harkness(Marvel_Comix)01",
+        "group": 16,
         "name_text": "Agatha Harkness",
         "description_text": "Agatha Harkness, the powerful witch, from Marvel Comics",
         "easy_path": "99sized",
@@ -727,6 +812,7 @@
       },
       {
         "filename": "Agatha_Harkness(Marvel_Comix)02",
+        "group": 16,
         "name_text": "Agatha Harkness",
         "description_text": "Agatha Harkness, the powerful witch, from Marvel Comics",
         "easy_path": "99sized",
@@ -735,6 +821,7 @@
       },
       {
         "filename": "Agatha_Harkness(Marvel_Comix)03",
+        "group": 16,
         "name_text": "Agatha Harkness",
         "description_text": "Agatha Harkness, the powerful witch, from Marvel Comics",
         "easy_path": "99sized",
@@ -745,6 +832,7 @@
     "Bai_Suzhen": [
       {
         "filename": "Bai_Suzhen(白娘子)(Madam_White_Snake)01",
+        "group": 17,
         "name_text": "Bai Suzhen (白娘子)",
         "description_text": "Bai Suzhen, the White Snake spirit, from Chinese legend 'Legend of the White Snake'",
         "easy_path": "99sized",
@@ -753,6 +841,7 @@
       },
       {
         "filename": "Bai_Suzhen(白娘子)(Madam_White_Snake)02",
+        "group": 17,
         "name_text": "Bai Suzhen (白娘子)",
         "description_text": "Bai Suzhen, the White Snake spirit, from Chinese legend 'Legend of the White Snake'",
         "easy_path": "99sized",
@@ -761,6 +850,7 @@
       },
       {
         "filename": "Bai_Suzhen(白娘子)(Madam_White_Snake)03",
+        "group": 17,
         "name_text": "Bai Suzhen (白娘子)",
         "description_text": "Bai Suzhen, the White Snake spirit, from Chinese legend 'Legend of the White Snake'",
         "easy_path": "99sized",
@@ -771,6 +861,7 @@
     "Circe": [
       {
         "filename": "Circe(Homer_Odyssey)01",
+        "group": 18,
         "name_text": "Circe",
         "description_text": "Circe, the enchantress, from Homer's Odyssey",
         "easy_path": "99sized",
@@ -779,6 +870,7 @@
       },
       {
         "filename": "Circe(Homer_Odyssey)02",
+        "group": 18,
         "name_text": "Circe",
         "description_text": "Circe, the enchantress, from Homer's Odyssey",
         "easy_path": "99sized",
@@ -787,6 +879,7 @@
       },
       {
         "filename": "Circe(Homer_Odyssey)03",
+        "group": 18,
         "name_text": "Circe",
         "description_text": "Circe, the enchantress, from Homer's Odyssey",
         "easy_path": "99sized",
@@ -797,6 +890,7 @@
     "Dani_and_Dorian": [
       {
         "filename": "Dani_and_Dorian_Wytte(Hooky)01",
+        "group": 19,
         "name_text": "Dani and Dorian Wytte",
         "description_text": "Dani and Dorian Wytte, twin witches, from the webcomic 'Hooky'",
         "easy_path": "99sized",
@@ -805,6 +899,7 @@
       },
       {
         "filename": "Dani_and_Dorian_Wytte(Hooky)02",
+        "group": 19,
         "name_text": "Dani and Dorian Wytte",
         "description_text": "Dani and Dorian Wytte, twin witches, from the webcomic 'Hooky'",
         "easy_path": "99sized",
@@ -813,6 +908,7 @@
       },
       {
         "filename": "Dani_and_Dorian_Wytte(Hooky)03",
+        "group": 19,
         "name_text": "Dani and Dorian Wytte",
         "description_text": "Dani and Dorian Wytte, twin witches, from the webcomic 'Hooky'",
         "easy_path": "99sized",
@@ -823,6 +919,7 @@
     "Granny_Weatherwax": [
       {
         "filename": "Granny_Weatherwax(Discworld)01",
+        "group": 20,
         "name_text": "Granny Weatherwax",
         "description_text": "Esme Weatherwax, the formidable witch, from Terry Pratchett's Discworld series",
         "easy_path": "99sized",
@@ -831,6 +928,7 @@
       },
       {
         "filename": "Granny_Weatherwax(Discworld)02",
+        "group": 20,
         "name_text": "Granny Weatherwax",
         "description_text": "Esme Weatherwax, the formidable witch, from Terry Pratchett's Discworld series",
         "easy_path": "99sized",
@@ -841,6 +939,7 @@
     "Morgan_le_Fay": [
       {
         "filename": "Morgan_le_Fay(Aurthuian)01",
+        "group": 21,
         "name_text": "Morgan le Fay",
         "description_text": "Morgan le Fay, the powerful enchantress, from Arthurian legend",
         "easy_path": "99sized",
@@ -849,6 +948,7 @@
       },
       {
         "filename": "Morgan_le_Fay(Aurthuian)02",
+        "group": 21,
         "name_text": "Morgan le Fay",
         "description_text": "Morgan le Fay, the powerful enchantress, from Arthurian legend",
         "easy_path": "99sized",
@@ -859,6 +959,7 @@
     "Nie_Xiaoqian": [
       {
         "filename": "Nie_Xiaoqian_(聂小倩)(Strange_Stories)01",
+        "group": 22,
         "name_text": "Nie Xiaoqian (聂小倩)",
         "description_text": "Nie Xiaoqian, the ghost spirit, from 'Strange Stories from a Chinese Studio'",
         "easy_path": "99sized",
@@ -867,6 +968,7 @@
       },
       {
         "filename": "Nie_Xiaoqian_(聂小倩)(Strange_Stories)02",
+        "group": 22,
         "name_text": "Nie Xiaoqian (聂小倩)",
         "description_text": "Nie Xiaoqian, the ghost spirit, from 'Strange Stories from a Chinese Studio'",
         "easy_path": "99sized",
@@ -877,6 +979,7 @@
     "Shuimu": [
       {
         "filename": "Shuimu (水母)(Water_Mother)01",
+        "group": 23,
         "name_text": "Shuimu (水母)",
         "description_text": "Shuimu, the Water Mother spirit, from Chinese folklore",
         "easy_path": "99sized",
@@ -885,6 +988,7 @@
       },
       {
         "filename": "Shuimu (水母)(Water_Mother)02",
+        "group": 23,
         "name_text": "Shuimu (水母)",
         "description_text": "Shuimu, the Water Mother spirit, from Chinese folklore",
         "easy_path": "99sized",
@@ -895,6 +999,7 @@
     "The_Weird_Sisters": [
       {
         "filename": "The_Weird_Sisters(Macbeth)01",
+        "group": 24,
         "name_text": "The Weird Sisters",
         "description_text": "The Weird Sisters, the three witches, from Shakespeare's 'Macbeth'",
         "easy_path": "99sized",
@@ -903,6 +1008,7 @@
       },
       {
         "filename": "The_Weird_Sisters(Macbeth)02",
+        "group": 24,
         "name_text": "The Weird Sisters",
         "description_text": "The Weird Sisters, the three witches, from Shakespeare's 'Macbeth'",
         "easy_path": "99sized",
@@ -911,6 +1017,7 @@
       },
       {
         "filename": "The_Weird_Sisters(Macbeth)03",
+        "group": 24,
         "name_text": "The Weird Sisters",
         "description_text": "The Weird Sisters, the three witches, from Shakespeare's 'Macbeth'",
         "easy_path": "99sized",
@@ -921,6 +1028,7 @@
     "Xianniang": [
       {
         "filename": "Xianniang(仙娘)(Mulan)01",
+        "group": 25,
         "name_text": "Xianniang (仙娘)",
         "description_text": "Xianniang, the powerful witch, from Disney's 'Mulan' (2020)",
         "easy_path": "99sized",
@@ -929,6 +1037,7 @@
       },
       {
         "filename": "Xianniang(仙娘)(Mulan)02",
+        "group": 25,
         "name_text": "Xianniang (仙娘)",
         "description_text": "Xianniang, the powerful witch, from Disney's 'Mulan' (2020)",
         "easy_path": "99sized",
