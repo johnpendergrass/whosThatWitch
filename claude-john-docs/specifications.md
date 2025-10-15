@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** Grid System Complete, Character Database Ready, Next: Random Selection
+**Status:** Group Selection & Adjacency Complete, Next: Tile Flip Mechanic
 **Date Started:** October 11, 2025
-**Last Updated:** October 12, 2025 - 16:20
+**Last Updated:** October 14, 2025 - 18:00
 
 ## Project Concept
 
@@ -72,9 +72,9 @@ Three difficulty levels with different grid sizes:
 
 ### Witch Character Images
 
-**Total Characters:** 20 unique witch characters
-**Total Images:** 76 individual photos (multiple photos per character)
-**Source Material:** Movies, TV shows, books, anime, cartoons
+**Total Characters:** 32 unique witch characters
+**Total Images:** 109 individual photos (multiple photos per character)
+**Source Material:** Movies, TV shows, books, anime, cartoons, mythology
 **Image Formats:** PNG with transparency (RGBA)
 
 **Available Sizes:**
@@ -87,13 +87,14 @@ Three difficulty levels with different grid sizes:
 
 **Storage:** `json/witchesImages.json`
 
-**Structure:** Character-grouped with metadata
+**Structure:** Character-grouped with metadata and group field
 ```json
 {
   "witchImages": {
     "Elphaba": [
       {
         "filename": "Elphaba(Broadway_Oz)01",
+        "group": "a",
         "name_text": "Elphaba",
         "description_text": "This is Elphaba, from the 2003 Broadway show Wicked!",
         "easy_path": "99sized",
@@ -102,16 +103,24 @@ Three difficulty levels with different grid sizes:
       },
       ...more images for this character...
     ],
-    "Samantha": [...],
+    "Galinda": [...],
     ...more characters...
   }
 }
 ```
 
-**Character List (20 characters, 76 total images):**
-1. Elphaba (9 images) - Wicked, Wizard of Oz
-2. Galinda/Glinda (7 images) - Wicked, Wizard of Oz
-3. Endora (3 images) - Bewitched
+**Group System:**
+- **Group A (Wicked):** Elphaba (9), Galinda (9) - always selected together
+- **Group B (Bewitched):** Endora (3), Samantha (6), Tabitha (3) - always selected together
+- **Group C (Addams Family):** Grandmama (3), Morticia (3), Wednesday (5) - always selected together
+- **Group D (Sabrina):** Sabrina (4), Salem (3) - always selected together
+- **Group E (Kiki):** Kiki (3), JiJi (3) - always selected together
+- **Group Z (Singles):** 24 characters - selected independently
+
+**Complete Character List (32 characters, 109 total images):**
+1. Elphaba (9 images) - Wicked, Wizard of Oz [Group A]
+2. Galinda (9 images) - Wicked, Wizard of Oz [Group A]
+3. Endora (3 images) - Bewitched [Group B]
 4. Grandmama (3 images) - The Addams Family
 5. Hermione (3 images) - Harry Potter
 6. Jadis (3 images) - Chronicles of Narnia
@@ -186,33 +195,47 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 
 **Current State:**
 - ✅ Grid displays with correct tile positions
-- ✅ Random images load (from simple array)
+- ✅ Group-based character selection (paired characters always together)
+- ✅ Matching pairs with bomb tiles
+- ✅ Adjacency constraints (0 for HARD, max 1 for EASY/MEDIUM)
 - ✅ Grid lines draw between tiles
 - ✅ Three difficulty levels function
+- ✅ All 327 image files validated and loading
 
 **To Be Implemented:**
-- ❌ Character-based random selection (pick characters, then one image each)
 - ❌ Tile flip interaction (face-down → face-up)
+- ❌ Face-down tile design
 - ❌ Match detection
+- ❌ Bomb tile click handling
+- ❌ Bonus tile functionality
 - ❌ Witch identification input/validation
 - ❌ Scoring system
 
-### Random Selection Strategy
+### Group-Based Selection Strategy (IMPLEMENTED)
 
-**Algorithm (To Be Implemented):**
-1. Load character-grouped database (`witchesImages.json`)
-2. Get array of all character names (keys)
-3. Shuffle character names randomly
-4. Select N characters (9, 16, or 25 based on difficulty)
-5. For each selected character, pick one random image from their array
-6. Build image paths using config patterns
-7. Store character metadata for identification feature
+**Algorithm:**
+1. Load character-grouped database (`witchesImages.json`) with group field
+2. Build group map separating paired groups (A-E) from singles (Z)
+3. Shuffle paired groups randomly
+4. Add complete paired groups that fit within needed count
+5. Fill remaining slots with random singles from Group Z
+6. For each selected character, pick one random image from their array
+7. Create matching pairs and add bomb tiles
+8. Shuffle with adjacency constraints
 
-**Why Character-Based:**
-- Prevents duplicate characters in same game
-- Enables "Who's That Witch?" identification challenge
+**Why Group-Based:**
+- Thematic character pairs always appear together (Elphaba+Galinda)
+- Prevents breaking up related characters
+- Group Z provides flexible pool of singles
+- Paired groups add narrative interest
 - Each game has variety of different characters
 - Metadata available for hints/descriptions
+
+**Adjacency Constraints:**
+- **EASY/MEDIUM:** Maximum 1 adjacent matching pair allowed
+- **HARD:** 0 adjacent matching pairs allowed
+- Reshuffles up to 1000 times to meet constraints
+- Makes game more challenging by distributing matches
 
 ## Parent App Integration
 
@@ -263,20 +286,24 @@ Math works perfectly for all three grid sizes:
 - ✅ Dynamic button generation
 - ✅ Configuration system (fully theme-agnostic)
 - ✅ Image processing script (166/124/99 sizes)
-- ✅ Character database with full metadata
-- ✅ Random image loading (simple array version)
+- ✅ Character database with full metadata and groups
+- ✅ Group-based random selection (paired characters stay together)
+- ✅ Matching pairs with bomb tiles
+- ✅ Adjacency constraint system
+- ✅ Comprehensive error checking and validation
+- ✅ All 327 image files validated and loading
 
 **In Progress:**
-- 🔄 Character-based random selection (next task)
-- 🔄 Update to use witchesImages.json
+- 🔄 Tile flip functionality (next priority)
 
 **Not Started:**
-- ❌ Tile flip functionality
 - ❌ Face-down tile design
 - ❌ Match detection logic
+- ❌ Bomb tile click handling
+- ❌ Bonus tile functionality
 - ❌ Witch identification UI
 - ❌ Scoring system
-- ❌ Game win/completion
+- ❌ Game win/completion detection
 - ❌ Instructions screen
 
 ## Development Philosophy
@@ -291,10 +318,10 @@ Following John's preferences:
 
 ## Next Major Tasks
 
-1. **Update random selection** to use character database (immediate)
-2. **Design tile back** appearance for face-down state
-3. **Implement tile flip** interaction and animation
-4. **Add match detection** logic
+1. **Design tile back** appearance for face-down state (immediate)
+2. **Implement tile flip** interaction and animation
+3. **Add match detection** logic
+4. **Implement bomb tile** click handling
 5. **Create identification UI** for "Who's That Witch?"
 6. **Implement scoring** system
 7. **Add game completion** detection and win screen
