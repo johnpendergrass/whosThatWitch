@@ -14,21 +14,24 @@
       "id": "hardTiles",
       "label": "HARD",
       "buttonId": "btn-hard",
-      "bombTiles": 3,
+      "imageTiles": 22,
+      "bombTiles": 2,
       "bonusTiles": 1
     },
     {
       "id": "mediumTiles",
       "label": "MEDIUM",
       "buttonId": "btn-medium",
-      "bombTiles": 2,
+      "imageTiles": 14,
+      "bombTiles": 1,
       "bonusTiles": 1
     },
     {
       "id": "easyTiles",
       "label": "EASY",
       "buttonId": "btn-easy",
-      "bombTiles": 1,
+      "imageTiles": 8,
+      "bombTiles": 0,
       "bonusTiles": 1
     }
   ],

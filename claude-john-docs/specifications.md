@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** Group Selection & Adjacency Complete, Next: Tile Flip Mechanic
+**Status:** Basic Selection System Complete, Next: Adjacency Constraints & Clickable Tiles
 **Date Started:** October 11, 2025
-**Last Updated:** October 14, 2025 - 18:00
+**Last Updated:** October 15, 2025 - 20:00
 
 ## Project Concept
 
@@ -118,27 +118,33 @@ Three difficulty levels with different grid sizes:
 - **Group Z (Singles):** 24 characters - selected independently
 
 **Complete Character List (32 characters, 109 total images):**
-1. Elphaba (9 images) - Wicked, Wizard of Oz [Group A]
-2. Galinda (9 images) - Wicked, Wizard of Oz [Group A]
-3. Endora (3 images) - Bewitched [Group B]
-4. Grandmama (3 images) - The Addams Family
-5. Hermione (3 images) - Harry Potter
-6. Jadis (3 images) - Chronicles of Narnia
-7. Kiki (3 images) - Kiki's Delivery Service
-8. Lafayette (3 images) - True Blood
-9. Melisandre (3 images) - Game of Thrones
-10. Mildred (3 images) - The Worst Witch
-11. Morticia (3 images) - The Addams Family
-12. McGonagall (3 images) - Harry Potter
-13. Sabrina (4 images) - Sabrina the Teenage Witch
-14. Salem (3 images) - Sabrina the Teenage Witch
-15. Samantha (6 images) - Bewitched
-16. Tabitha (3 images) - Bewitched
-17. Wednesday (5 images) - The Addams Family
-18. Wendy (3 images) - Harvey Comics
-19. Willow (3 images) - Buffy the Vampire Slayer
-20. Witch Hazel (3 images) - Looney Tunes
-21. Yubaba (3 images) - Spirited Away
+
+**Grouped Characters (Groups 1-5):**
+1. Elphaba (9 images) - Wicked, Wizard of Oz [Group 1]
+2. Galinda (9 images) - Wicked, Wizard of Oz [Group 1]
+3. Endora (3 images) - Bewitched [Group 2]
+4. Samantha (6 images) - Bewitched [Group 2]
+5. Tabitha (3 images) - Bewitched [Group 2]
+6. Grandmama (3 images) - The Addams Family [Group 3]
+7. Morticia (3 images) - The Addams Family [Group 3]
+8. Wednesday (5 images) - The Addams Family [Group 3]
+9. Sabrina (4 images) - Sabrina the Teenage Witch [Group 4]
+10. Salem (3 images) - Sabrina the Teenage Witch [Group 4]
+11. Kiki (3 images) - Kiki's Delivery Service [Group 5]
+12. Jiji (3 images) - Kiki's Delivery Service [Group 5]
+
+**Single Characters (Groups 6-25):**
+13. Hermione (3 images) - Harry Potter [Group 6]
+14. Jadis (3 images) - Chronicles of Narnia [Group 7]
+15. Lafayette (3 images) - True Blood [Group 8]
+16. Melisandre (3 images) - Game of Thrones [Group 9]
+17. Mildred (3 images) - The Worst Witch [Group 10]
+18. McGonagall (3 images) - Harry Potter [Group 11]
+19. Wendy (3 images) - Harvey Comics [Group 12]
+20. Willow (3 images) - Buffy the Vampire Slayer [Group 13]
+21. Witch Hazel (3 images) - Looney Tunes [Group 14]
+22. Yubaba (3 images) - Spirited Away [Group 15]
+23-32. (10 more single characters in groups 16-25)
 
 ## Configuration System
 
@@ -195,14 +201,20 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 
 **Current State:**
 - ✅ Grid displays with correct tile positions
-- ✅ Group-based character selection (paired characters always together)
-- ✅ Matching pairs with bomb tiles
-- ✅ Adjacency constraints (0 for HARD, max 1 for EASY/MEDIUM)
+- ✅ Simplified square position system (left→right, top→bottom)
+- ✅ Group-based character selection with numeric groups
+- ✅ Matching pairs created (same object reference)
+- ✅ Bomb and bonus tiles added
+- ✅ Full metadata preserved (name_text, description_text)
+- ✅ Random shuffle implemented
 - ✅ Grid lines draw between tiles
 - ✅ Three difficulty levels function
-- ✅ All 327 image files validated and loading
+- ✅ Witch list UI displays to the right
+- ✅ Hover tooltips show witch descriptions
 
 **To Be Implemented:**
+- ⚠️ Adjacency constraints (avoid matching pairs next to each other)
+- ❌ Clickable tiles (event listeners)
 - ❌ Tile flip interaction (face-down → face-up)
 - ❌ Face-down tile design
 - ❌ Match detection
@@ -211,31 +223,32 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - ❌ Witch identification input/validation
 - ❌ Scoring system
 
-### Group-Based Selection Strategy (IMPLEMENTED)
+### Basic Selection Strategy (IMPLEMENTED v0.05)
 
 **Algorithm:**
-1. Load character-grouped database (`witchesImages.json`) with group field
-2. Build group map separating paired groups (A-E) from singles (Z)
-3. Shuffle paired groups randomly
-4. Add complete paired groups that fit within needed count
-5. Fill remaining slots with random singles from Group Z
-6. For each selected character, pick one random image from their array
-7. Create matching pairs and add bomb tiles
-8. Shuffle with adjacency constraints
+1. Load character-grouped database (`witches.json`) with numeric group field (1-25)
+2. Build `groupedWitches` organizing images by group number
+3. Calculate unique images needed: `imageTiles / 2`
+4. Randomly select that many group numbers
+5. For each selected group: randomly pick one character
+6. For that character: randomly pick one image
+7. Store full tile data: `{imagePath, name_text, description_text, type: 'witch'}`
+8. Create matching pairs (push same object twice for matching)
+9. Add bomb tiles: `{imagePath, type: 'bomb'}`
+10. Add bonus tiles: `{imagePath, type: 'bonus'}`
+11. Shuffle all tiles randomly
 
 **Why Group-Based:**
-- Thematic character pairs always appear together (Elphaba+Galinda)
-- Prevents breaking up related characters
-- Group Z provides flexible pool of singles
-- Paired groups add narrative interest
+- Groups 1-5: Multi-character thematic sets appear together
+- Groups 6-25: Individual characters can be mixed freely
+- System extensible (new groups = new group numbers)
+- Metadata preserved for "Who's That Witch?" feature
 - Each game has variety of different characters
-- Metadata available for hints/descriptions
 
-**Adjacency Constraints:**
-- **EASY/MEDIUM:** Maximum 1 adjacent matching pair allowed
-- **HARD:** 0 adjacent matching pairs allowed
-- Reshuffles up to 1000 times to meet constraints
-- Makes game more challenging by distributing matches
+**Current Limitations:**
+- No adjacency constraints yet (matching pairs can be next to each other)
+- Random shuffle only (no strategic placement)
+- Simple approach prioritizes clarity over optimization
 
 ## Parent App Integration
 
@@ -278,26 +291,31 @@ Math works perfectly for all three grid sizes:
 
 ## Current Implementation Status
 
-**Completed:**
+**Completed (v0.05):**
 - ✅ Screen and board layout (950×714, 502×502)
 - ✅ Grid system with three difficulties
-- ✅ Pre-calculated tile positions
+- ✅ Simplified square position arrays (left→right, top→bottom)
 - ✅ Grid line rendering
 - ✅ Dynamic button generation
 - ✅ Configuration system (fully theme-agnostic)
 - ✅ Image processing script (166/124/99 sizes)
-- ✅ Character database with full metadata and groups
-- ✅ Group-based random selection (paired characters stay together)
-- ✅ Matching pairs with bomb tiles
-- ✅ Adjacency constraint system
-- ✅ Comprehensive error checking and validation
-- ✅ All 327 image files validated and loading
+- ✅ Character database with full metadata and numeric groups (1-25)
+- ✅ Group-based random selection
+- ✅ Matching pairs created (same object reference)
+- ✅ Bomb and bonus tile addition
+- ✅ Random shuffle implementation
+- ✅ Full metadata preservation on tiles
+- ✅ Witch list UI to the right of grid
+- ✅ Hover tooltips for witch descriptions
+- ✅ Helper functions (shuffleArray, getRandomFromArray)
 
 **In Progress:**
-- 🔄 Tile flip functionality (next priority)
+- 🔄 Adjacency constraints (avoid adjacent matching pairs)
+- 🔄 Clickable tiles (next priority)
 
 **Not Started:**
 - ❌ Face-down tile design
+- ❌ Tile flip animation
 - ❌ Match detection logic
 - ❌ Bomb tile click handling
 - ❌ Bonus tile functionality
@@ -318,10 +336,13 @@ Following John's preferences:
 
 ## Next Major Tasks
 
-1. **Design tile back** appearance for face-down state (immediate)
-2. **Implement tile flip** interaction and animation
-3. **Add match detection** logic
-4. **Implement bomb tile** click handling
-5. **Create identification UI** for "Who's That Witch?"
-6. **Implement scoring** system
-7. **Add game completion** detection and win screen
+1. **Implement adjacency constraints** - Avoid matching pairs being placed next to each other (immediate)
+2. **Make tiles clickable** - Add event listeners and visual feedback
+3. **Format description text** - Improve tooltip display and positioning
+4. **Design tile back** appearance for face-down state
+5. **Implement tile flip** interaction and animation
+6. **Add match detection** logic
+7. **Implement bomb tile** click handling
+8. **Create identification UI** for "Who's That Witch?"
+9. **Implement scoring** system
+10. **Add game completion** detection and win screen

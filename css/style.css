@@ -72,3 +72,47 @@ body {
 .tile-image {
   position: absolute;
 }
+
+/* Witch list - positioned to the right of the board */
+#witch-list {
+  position: absolute;
+  left: 570px;
+  bottom: 20px;
+  width: 350px;
+  max-height: 532px;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.witch-item {
+  margin-bottom: 8px;
+  position: relative;
+  cursor: help;
+}
+
+.witch-name {
+  font-weight: bold;
+  color: #ff8c42;
+}
+
+.witch-description {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 25px;
+  background: #2a1a35;
+  color: #ffffff;
+  padding: 10px;
+  border: 2px solid #7b2d8e;
+  border-radius: 5px;
+  width: 300px;
+  z-index: 1000;
+  line-height: 1.4;
+  font-size: 13px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.witch-item:hover .witch-description {
+  display: block;
+}
