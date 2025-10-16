@@ -73,8 +73,8 @@ body {
   position: absolute;
 }
 
-/* Witch list - positioned to the right of the board */
-#witch-list {
+/* Character list - positioned to the right of the board */
+#character-list {
   position: absolute;
   left: 570px;
   bottom: 20px;
@@ -85,18 +85,18 @@ body {
   padding: 10px;
 }
 
-.witch-item {
+.character-item {
   margin-bottom: 8px;
   position: relative;
   cursor: help;
 }
 
-.witch-name {
+.character-name {
   font-weight: bold;
   color: #ff8c42;
 }
 
-.witch-description {
+.character-description {
   display: none;
   position: absolute;
   left: 0;
@@ -113,6 +113,6 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-.witch-item:hover .witch-description {
+.character-item:hover .character-description {
   display: block;
 }

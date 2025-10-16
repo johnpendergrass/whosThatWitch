@@ -582,8 +582,8 @@ function clearBoard() {
   const board = document.getElementById("board");
   board.innerHTML = "";
 
-  const witchList = document.getElementById("witch-list");
-  witchList.innerHTML = "";
+  const characterList = document.getElementById("character-list");
+  characterList.innerHTML = "";
 }
 
 /**
@@ -627,9 +627,9 @@ function drawGrid(difficultyId) {
   // Draw tiles using squares (calculate x/y from row/col)
   drawTiles(squares, tileSize, lineSize, positionToTileMap);
 
-  // Update witch list (extract all tiles from map)
+  // Update character list (extract all tiles from map)
   const allTiles = positionToTileMap.filter(t => t !== null);
-  updateWitchList(allTiles);
+  updateCharacterList(allTiles);
 
   console.log(`Grid drawn: ${squares.length} tiles`);
 }
@@ -713,41 +713,41 @@ function drawTiles(squares, tileSize, lineSize, positionToTileMap) {
 }
 
 /**
- * Update the witch list display
- * Shows unique witches in the current game
+ * Update the character list display
+ * Shows unique characters in the current game
  */
-function updateWitchList(tileDataArray) {
-  const witchListDiv = document.getElementById("witch-list");
-  witchListDiv.innerHTML = "";
+function updateCharacterList(tileDataArray) {
+  const characterListDiv = document.getElementById("character-list");
+  characterListDiv.innerHTML = "";
 
-  // Extract unique witches (filter out bombs/bonus and duplicates)
-  const uniqueWitches = [];
+  // Extract unique characters (filter out bombs/bonus and duplicates)
+  const uniqueCharacters = [];
   const seenNames = new Set();
 
   for (const tileData of tileDataArray) {
     if (tileData.type === 'gameTile' && tileData.name_text && !seenNames.has(tileData.name_text)) {
-      uniqueWitches.push(tileData);
+      uniqueCharacters.push(tileData);
       seenNames.add(tileData.name_text);
     }
   }
 
-  // Create list items for each unique witch
-  uniqueWitches.forEach(witch => {
-    const witchItem = document.createElement("div");
-    witchItem.className = "witch-item";
+  // Create list items for each unique character
+  uniqueCharacters.forEach(character => {
+    const characterItem = document.createElement("div");
+    characterItem.className = "character-item";
 
-    const witchName = document.createElement("div");
-    witchName.className = "witch-name";
-    witchName.textContent = witch.name_text;
+    const characterName = document.createElement("div");
+    characterName.className = "character-name";
+    characterName.textContent = character.name_text;
 
-    const witchDesc = document.createElement("div");
-    witchDesc.className = "witch-description";
-    witchDesc.textContent = witch.description_text;
+    const characterDesc = document.createElement("div");
+    characterDesc.className = "character-description";
+    characterDesc.textContent = character.description_text;
 
-    witchItem.appendChild(witchName);
-    witchItem.appendChild(witchDesc);
-    witchListDiv.appendChild(witchItem);
+    characterItem.appendChild(characterName);
+    characterItem.appendChild(characterDesc);
+    characterListDiv.appendChild(characterItem);
   });
 
-  console.log(`Witch list updated: ${uniqueWitches.length} unique witches`);
+  console.log(`Character list updated: ${uniqueCharacters.length} unique characters`);
 }
