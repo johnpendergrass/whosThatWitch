@@ -11,11 +11,11 @@
   },
   "difficulties": [
     {
-      "id": "hardTiles",
-      "label": "HARD",
-      "buttonId": "btn-hard",
-      "imageTiles": 22,
-      "bombTiles": 2,
+      "id": "easyTiles",
+      "label": "EASY",
+      "buttonId": "btn-easy",
+      "imageTiles": 8,
+      "bombTiles": 0,
       "bonusTiles": 1
     },
     {
@@ -27,11 +27,11 @@
       "bonusTiles": 1
     },
     {
-      "id": "easyTiles",
-      "label": "EASY",
-      "buttonId": "btn-easy",
-      "imageTiles": 8,
-      "bombTiles": 0,
+      "id": "hardTiles",
+      "label": "HARD",
+      "buttonId": "btn-hard",
+      "imageTiles": 22,
+      "bombTiles": 2,
       "bonusTiles": 1
     }
   ],

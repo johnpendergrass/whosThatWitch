@@ -4,15 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Who's That Witch?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Creepster&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div id="screen">
-      <div class="test-buttons">
+      <div id="game-title">Who's That Witch?</div>
+      <div id="game-subtitle">
+        First match the witch images, and then identify
+        <b>Who's That Witch?</b> Don't get burned!
+      </div>
+      <div class="difficulty-buttons">
         <!-- Buttons will be dynamically created from gameConfig.json -->
       </div>
       <div id="board"></div>
-      <div id="character-list"></div>
+      <div id="status-box">
+        <div id="character-list"></div>
+      </div>
       <!-- Game content will go here -->
     </div>
 

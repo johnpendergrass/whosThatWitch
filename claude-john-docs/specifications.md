@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** Tile Placement Algorithm Complete, Next: Clickable Tiles & Flip Interaction
+**Status:** UI Complete (v0.07), Next: Tile Flip & Three-Click Game Mechanic
 **Date Started:** October 11, 2025
-**Last Updated:** October 16, 2025 - 09:30
+**Last Updated:** October 16, 2025 - 16:00
 
 ## Project Concept
 
@@ -330,12 +330,12 @@ Math works perfectly for all three grid sizes:
 
 ## Current Implementation Status
 
-**Completed (v0.06):**
+**Completed (v0.07 - UI Polish):**
 - ✅ Screen and board layout (950×714, 502×502)
 - ✅ Grid system with three difficulties
 - ✅ Simplified square position arrays (left→right, top→bottom)
 - ✅ Grid line rendering
-- ✅ Dynamic button generation
+- ✅ Dynamic button generation with custom 80×30px images
 - ✅ Configuration system (fully theme-agnostic)
 - ✅ Image processing script (166/124/99 sizes)
 - ✅ Character database with full metadata and numeric groups (1-25)
@@ -349,23 +349,32 @@ Math works perfectly for all three grid sizes:
 - ✅ Code constants as single source of truth
 - ✅ x/y coordinates calculated from row/col
 - ✅ Full metadata preservation on tiles
-- ✅ Witch list UI to the right of grid
-- ✅ Hover tooltips for witch descriptions
+- ✅ Character list UI in status box (renamed from "witch list")
+- ✅ Hover tooltips for character descriptions
 - ✅ Helper functions (shuffleArray, getRandomFromArray, areAdjacent, getAvailablePositions)
+- ✅ Game title ("Who's That Witch?" in Creepster font with purple glow)
+- ✅ Game subtitle with instructions
+- ✅ STATUS box container with character list
+- ✅ Individual character points display (+10 per character)
+- ✅ Integrated scoring summary (Clicks, Total Score)
+- ✅ Difficulty buttons relocated to bottom of status box
+- ✅ Consistent "character" naming throughout codebase
+- ✅ Face-down tile back images created (ready to integrate)
 
-**In Progress:**
-- 🔄 Clickable tiles (next priority)
+**Next Priority (v0.08 - Game Mechanics):**
+- 🎯 Three-click game mechanic implementation
+- 🎯 Tile flip interaction (face-down ↔ face-up)
+- 🎯 Click event handlers for tiles and character names
+- 🎯 Match detection and validation
+- 🎯 Character identification validation
+- 🎯 Scoring system (dynamic updates)
 
 **Not Started:**
-- ❌ Face-down tile design
-- ❌ Tile flip animation
-- ❌ Match detection logic
+- ❌ Tile flip animation/transition effects
 - ❌ Bomb tile click handling
 - ❌ Bonus tile functionality
-- ❌ Witch identification UI
-- ❌ Scoring system
 - ❌ Game win/completion detection
-- ❌ Instructions screen
+- ❌ Victory screen
 
 ## Development Philosophy
 
@@ -377,15 +386,44 @@ Following John's preferences:
 - **Configuration over code:** Everything in JSON files
 - **Wait for approval:** Don't implement major features without confirmation
 
-## Next Major Tasks
+## Next Major Tasks (v0.08 - Game Mechanics)
 
-1. **Make tiles clickable** - Add event listeners and visual feedback (immediate)
-2. **Design tile back** appearance for face-down state
-3. **Implement tile flip** interaction and animation
-4. **Add match detection** logic using pairId comparison
-5. **Implement bomb tile** click handling and penalties
-6. **Implement bonus tile** click handling and rewards
-7. **Create identification UI** for "Who's That Witch?"
-8. **Implement scoring** system (matches, identification, bombs, bonuses)
-9. **Add game completion** detection and win screen
-10. **Format description text** - Improve tooltip display and positioning (optional enhancement)
+### Immediate Priority: Three-Click Game Mechanic
+
+**Workflow:**
+1. Click 1: Player clicks face-down tile → flip to face-up, reveal image
+2. Click 2: Player clicks another face-down tile → flip to face-up, reveal image
+3. Click 3: Player clicks character name in list → identify the character
+
+**Validation:**
+- If tiles match (same pairId) AND character name is correct:
+  - Mark tiles as "completed" (keep face-up, visual indicator)
+  - Mark character in list as "identified"
+  - Update character points (+10 earned)
+  - Update Clicks counter (-1 per attempt)
+  - Update TOTAL SCORE
+- If tiles DON'T match OR character name is wrong:
+  - Flip both tiles back face-down
+  - Increment Clicks counter
+  - No points earned
+
+### Implementation Tasks
+
+1. **Tile State Management** - Track face-up/face-down, completed status
+2. **Click Event Handlers** - Tiles and character names clickable
+3. **Tile Flip Logic** - Toggle between face-down back image and face-up character image
+4. **Game State Machine** - Track current click (first tile, second tile, character selection)
+5. **Match Validation** - Compare pairId values of two tiles
+6. **Character ID Validation** - Verify selected name matches tile character
+7. **Scoring Updates** - Calculate and display real-time scores
+8. **Visual Feedback** - Show completed matches differently
+9. **Click Counter** - Track and display total clicks made
+10. **Prevent Invalid Clicks** - Don't allow clicking completed tiles
+
+### Future Tasks
+
+11. **Tile flip animation** - Smooth CSS transitions
+12. **Bomb tile handling** - Penalties when clicked
+13. **Bonus tile functionality** - Rewards when clicked
+14. **Game completion** - Detect all pairs identified
+15. **Victory screen** - Display final score and stats

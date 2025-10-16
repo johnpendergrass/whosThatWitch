@@ -171,16 +171,27 @@ function buildGroupedWitches() {
  * Setup button click handlers dynamically from config
  */
 function setupButtons() {
-  const buttonContainer = document.querySelector(".test-buttons");
+  const buttonContainer = document.querySelector(".difficulty-buttons");
 
   // Clear existing buttons
   buttonContainer.innerHTML = "";
 
-  // Create buttons from config
+  // Map difficulty IDs to button images
+  const buttonImages = {
+    "easyTiles": "assets/tileBack/_easyButton_80x30.png",
+    "mediumTiles": "assets/tileBack/_mediumButton_80x30.png",
+    "hardTiles": "assets/tileBack/_hardButton_80x30.png"
+  };
+
+  // Create image buttons from config
   gameConfig.difficulties.forEach((difficulty) => {
-    const button = document.createElement("button");
+    const button = document.createElement("img");
     button.id = difficulty.buttonId;
-    button.textContent = difficulty.label;
+    button.src = buttonImages[difficulty.id];
+    button.alt = difficulty.label;
+    button.className = "difficulty-button-img";
+    button.width = 80;
+    button.height = 30;
     button.addEventListener("click", () => {
       drawGrid(difficulty.id);
     });
@@ -740,14 +751,60 @@ function updateCharacterList(tileDataArray) {
     characterName.className = "character-name";
     characterName.textContent = character.name_text;
 
+    const characterPoints = document.createElement("span");
+    characterPoints.className = "character-points";
+    characterPoints.textContent = "+10";
+
     const characterDesc = document.createElement("div");
     characterDesc.className = "character-description";
     characterDesc.textContent = character.description_text;
 
     characterItem.appendChild(characterName);
+    characterItem.appendChild(characterPoints);
     characterItem.appendChild(characterDesc);
     characterListDiv.appendChild(characterItem);
   });
+
+  // Add spacing before scoring section
+  const spacer = document.createElement("div");
+  spacer.className = "character-spacer";
+  characterListDiv.appendChild(spacer);
+
+  // Add separator line
+  const separator1 = document.createElement("div");
+  separator1.className = "character-separator";
+  characterListDiv.appendChild(separator1);
+
+  // Add Clicks row
+  const clicksItem = document.createElement("div");
+  clicksItem.className = "character-item";
+  const clicksLabel = document.createElement("div");
+  clicksLabel.className = "score-label-text";
+  clicksLabel.textContent = "Clicks:";
+  const clicksValue = document.createElement("span");
+  clicksValue.className = "character-points";
+  clicksValue.textContent = "-13";
+  clicksItem.appendChild(clicksLabel);
+  clicksItem.appendChild(clicksValue);
+  characterListDiv.appendChild(clicksItem);
+
+  // Add separator line
+  const separator2 = document.createElement("div");
+  separator2.className = "character-separator";
+  characterListDiv.appendChild(separator2);
+
+  // Add Total Score row
+  const totalItem = document.createElement("div");
+  totalItem.className = "character-item score-total-row";
+  const totalLabel = document.createElement("div");
+  totalLabel.className = "score-label-text";
+  totalLabel.textContent = "TOTAL SCORE:";
+  const totalValue = document.createElement("span");
+  totalValue.className = "character-points";
+  totalValue.textContent = "+87";
+  totalItem.appendChild(totalLabel);
+  totalItem.appendChild(totalValue);
+  characterListDiv.appendChild(totalItem);
 
   console.log(`Character list updated: ${uniqueCharacters.length} unique characters`);
 }
