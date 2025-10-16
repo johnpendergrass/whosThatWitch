@@ -318,10 +318,11 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
     });
   }
 
-  // Add bonus tiles (using bomb image for now)
+  // Add bonus tiles
+  const bonusPath = buildImagePath("_bonusTile", tileSize);
   for (let i = 0; i < bonusTiles; i++) {
     tiles.push({
-      imagePath: bombPath,
+      imagePath: bonusPath,
       type: 'bonus'
     });
   }
