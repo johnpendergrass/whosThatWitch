@@ -213,6 +213,51 @@ function getRandomFromArray(array) {
 }
 
 /**
+ * Check if two positions are adjacent
+ * @param {Object} pos1 - Position with {row, col}
+ * @param {Object} pos2 - Position with {row, col}
+ * @param {boolean} includeDiagonal - Include diagonal adjacency (default: true)
+ * @returns {boolean} True if positions are adjacent
+ */
+function areAdjacent(pos1, pos2, includeDiagonal = true) {
+  const rowDiff = Math.abs(pos1.row - pos2.row);
+  const colDiff = Math.abs(pos1.col - pos2.col);
+
+  if (includeDiagonal) {
+    // Adjacent if within 1 step in any direction (including diagonal)
+    return rowDiff <= 1 && colDiff <= 1 && !(rowDiff === 0 && colDiff === 0);
+  } else {
+    // Adjacent only horizontally or vertically
+    return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+  }
+}
+
+/**
+ * Get positions that are available (not filled and not adjacent to excluded positions)
+ * @param {Array} allPositions - All grid positions
+ * @param {Array} filledPositions - Already filled positions
+ * @param {Array} excludeAdjacentTo - Positions to avoid adjacency with
+ * @returns {Array} Available positions
+ */
+function getAvailablePositions(allPositions, filledPositions, excludeAdjacentTo = []) {
+  return allPositions.filter(pos => {
+    // Skip if already filled
+    if (filledPositions.some(fp => fp.num === pos.num)) {
+      return false;
+    }
+
+    // Skip if adjacent to any excluded position
+    for (const excludePos of excludeAdjacentTo) {
+      if (areAdjacent(pos, excludePos, true)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
+/**
  * Build image path from base name using config patterns
  * @param {string} baseName - Base image name
  * @param {number} size - Image size
@@ -246,10 +291,24 @@ function buildImagePath(baseName, size) {
 }
 
 /**
+ * Get the appropriate squares array for difficulty level
+ * @param {string} difficultyId - Difficulty identifier
+ * @returns {Array} Squares array with {num, row, col}
+ */
+function getSquaresForDifficulty(difficultyId) {
+  switch(difficultyId) {
+    case 'easyTiles': return EASY_SQUARES;
+    case 'mediumTiles': return MEDIUM_SQUARES;
+    case 'hardTiles': return HARD_SQUARES;
+    default: return MEDIUM_SQUARES;
+  }
+}
+
+/**
  * Select images for a difficulty level
  * @param {Object} difficultyConfig - Difficulty configuration from gameConfig
  * @param {number} tileSize - Size of tiles for this difficulty
- * @returns {Array} Array of tile objects with imagePath and metadata, shuffled and ready to display
+ * @returns {Object} Object with {gameTiles, bombs, bonus} arrays
  */
 function selectImagesForDifficulty(difficultyConfig, tileSize) {
   const tiles = [];
@@ -296,7 +355,8 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
       imagePath: imagePath,
       name_text: selectedImage.name_text,
       description_text: selectedImage.description_text,
-      type: 'witch'
+      type: 'gameTile',
+      pairId: groupNum  // Unique identifier for matching pairs
     };
     selectedImages.push(tileData);
 
@@ -309,30 +369,191 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
     tiles.push(tileData);  // Same object reference for matching
   }
 
-  // Add bomb tiles
+  // Build separate arrays for bombs
   const bombPath = buildImagePath("_bombTile", tileSize);
+  const bombArray = [];
   for (let i = 0; i < bombTiles; i++) {
-    tiles.push({
+    bombArray.push({
       imagePath: bombPath,
       type: 'bomb'
     });
   }
 
-  // Add bonus tiles
+  // Build separate array for bonus tiles
   const bonusPath = buildImagePath("_bonusTile", tileSize);
+  const bonusArray = [];
   for (let i = 0; i < bonusTiles; i++) {
-    tiles.push({
+    bonusArray.push({
       imagePath: bonusPath,
       type: 'bonus'
     });
   }
 
-  // Shuffle all tiles
-  shuffleArray(tiles);
+  console.log(`Created tiles organized by type: ${imageTiles} gameTiles (${uniqueImagesNeeded} pairs) + ${bombTiles} bombs + ${bonusTiles} bonus`);
 
-  console.log(`Created ${tiles.length} tiles: ${imageTiles} image tiles (${uniqueImagesNeeded} pairs) + ${bombTiles} bombs + ${bonusTiles} bonus`);
+  // Return organized by type (no shuffle yet - will be done during placement)
+  return {
+    gameTiles: tiles,
+    bombs: bombArray,
+    bonus: bonusArray
+  };
+}
 
-  return tiles;
+/**
+ * Assign tiles to grid positions with adjacency constraints for special tiles
+ * @param {Object} tilesByType - Object with {gameTiles, bombs, bonus}
+ * @param {Array} squares - Grid squares with {num, row, col}
+ * @returns {Array} Array where index = position number, value = tile object
+ */
+function assignTilesToPositions(tilesByType, squares) {
+  const result = new Array(squares.length).fill(null);
+  const filledSquares = [];
+  const excludeAdjacent = [];
+
+  // Step 1: Place special tiles (bombs, then bonus) with adjacency checking
+  const specialTiles = [...tilesByType.bombs, ...tilesByType.bonus];
+
+  for (const specialTile of specialTiles) {
+    const available = getAvailablePositions(squares, filledSquares, excludeAdjacent);
+
+    if (available.length === 0) {
+      console.warn("No available positions for special tile! Using any unfilled position.");
+      const unfilled = squares.filter(s => !filledSquares.some(f => f.num === s.num));
+      if (unfilled.length > 0) {
+        const selectedSquare = getRandomFromArray(unfilled);
+        result[selectedSquare.num] = specialTile;
+        filledSquares.push(selectedSquare);
+      }
+      continue;
+    }
+
+    // Pick random available position
+    const selectedSquare = getRandomFromArray(available);
+    result[selectedSquare.num] = specialTile;
+    filledSquares.push(selectedSquare);
+    excludeAdjacent.push(selectedSquare);
+
+    console.log(`Placed ${specialTile.type} at position ${selectedSquare.num} (row ${selectedSquare.row}, col ${selectedSquare.col})`);
+  }
+
+  // Step 2: Place gameTiles with adjacency constraints for matching pairs
+  const maxAttempts = 100;
+  let placementSuccessful = false;
+
+  // Get unique pairIds
+  const uniquePairIds = [...new Set(tilesByType.gameTiles.map(t => t.pairId))];
+  console.log(`Attempting to place ${uniquePairIds.length} pairs with adjacency constraints...`);
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // Reset gameTile placements (keep special tiles)
+    for (let i = 0; i < result.length; i++) {
+      if (result[i] && result[i].type === 'gameTile') {
+        result[i] = null;
+      }
+    }
+
+    // Reset filled squares to only special tiles
+    const gameTileFilledSquares = [];
+    let attemptFailed = false;
+
+    // Try to place each pair
+    for (const pairId of uniquePairIds) {
+      // Get both tiles with this pairId
+      const tilesWithPairId = tilesByType.gameTiles.filter(t => t.pairId === pairId);
+
+      if (tilesWithPairId.length !== 2) {
+        console.error(`Expected 2 tiles with pairId ${pairId}, found ${tilesWithPairId.length}`);
+        continue;
+      }
+
+      // Get available positions (not filled by special tiles or other gameTiles this attempt)
+      const availableForFirst = squares.filter(s =>
+        !filledSquares.some(f => f.num === s.num) &&
+        !gameTileFilledSquares.some(f => f.num === s.num)
+      );
+
+      if (availableForFirst.length === 0) {
+        attemptFailed = true;
+        break;
+      }
+
+      // Place first tile randomly
+      const firstSquare = getRandomFromArray(availableForFirst);
+      result[firstSquare.num] = tilesWithPairId[0];
+      gameTileFilledSquares.push(firstSquare);
+
+      // Get available positions for second tile (not adjacent to first)
+      const availableForSecond = squares.filter(s =>
+        !filledSquares.some(f => f.num === s.num) &&
+        !gameTileFilledSquares.some(f => f.num === s.num) &&
+        !areAdjacent(s, firstSquare, true)
+      );
+
+      if (availableForSecond.length === 0) {
+        // Can't place second tile non-adjacently, retry
+        attemptFailed = true;
+        break;
+      }
+
+      // Place second tile randomly in non-adjacent position
+      const secondSquare = getRandomFromArray(availableForSecond);
+      result[secondSquare.num] = tilesWithPairId[1];
+      gameTileFilledSquares.push(secondSquare);
+    }
+
+    if (!attemptFailed) {
+      placementSuccessful = true;
+      console.log(`Successfully placed all pairs with adjacency constraints on attempt ${attempt}`);
+      break;
+    }
+  }
+
+  // If we failed after max attempts, place remaining pairs randomly (accept adjacency)
+  if (!placementSuccessful) {
+    console.warn(`Could not place all pairs non-adjacently after ${maxAttempts} attempts. Placing remaining randomly.`);
+
+    // Clear any partially placed gameTiles from the failed 100th attempt
+    for (let i = 0; i < result.length; i++) {
+      if (result[i] && result[i].type === 'gameTile') {
+        result[i] = null;
+      }
+    }
+
+    // DIAGNOSTIC: Check state before fallback placement
+    console.log(`FALLBACK DIAGNOSTICS:`);
+    console.log(`  Total squares: ${squares.length}`);
+    console.log(`  filledSquares (special tiles): ${filledSquares.length}`, filledSquares.map(s => s.num));
+    console.log(`  gameTiles to place: ${tilesByType.gameTiles.length}`);
+
+    // Count nulls in result after clearing (should equal gameTiles to place)
+    const nullsBefore = result.filter(r => r === null).length;
+    console.log(`  Null positions in result after clearing: ${nullsBefore}`);
+
+    // Get remaining empty squares (not filled by special tiles)
+    const remainingSquares = squares.filter(s =>
+      !filledSquares.some(f => f.num === s.num)
+    );
+    console.log(`  remainingSquares: ${remainingSquares.length}`, remainingSquares.map(s => s.num));
+
+    // Since we cleared all gameTiles at start of last failed attempt, place all of them
+    const shuffledTiles = shuffleArray([...tilesByType.gameTiles]);
+    const shuffledSquares = shuffleArray([...remainingSquares]);
+
+    console.log(`  shuffledTiles: ${shuffledTiles.length}`);
+    console.log(`  shuffledSquares: ${shuffledSquares.length}`, shuffledSquares.map(s => s.num));
+
+    for (let i = 0; i < shuffledTiles.length && i < shuffledSquares.length; i++) {
+      result[shuffledSquares[i].num] = shuffledTiles[i];
+      console.log(`    Placed tile at square ${shuffledSquares[i].num} (pairId: ${shuffledTiles[i].pairId})`);
+    }
+
+    // Count nulls after placement
+    const nullsAfter = result.filter(r => r === null).length;
+    console.log(`  Null positions in result after: ${nullsAfter}`);
+    console.log(`  Placed ${shuffledTiles.length} gameTiles randomly (adjacency accepted)`);
+  }
+
+  return result;
 }
 
 /**
@@ -390,21 +611,27 @@ function drawGrid(difficultyId) {
   const tileSize = config.tileSize;
   const lineSize = config.lineSize;
   const lineColor = config.lineColor;
-  const positions = config.squarePositions;
 
-  // Get images for this difficulty (witch pairs + bombs + bonus)
-  const tileImages = getTileImages(difficultyId, tileSize);
+  // Get tiles organized by type
+  const tilesByType = getTileImages(difficultyId, tileSize);
+
+  // Get squares for adjacency logic (single source of truth)
+  const squares = getSquaresForDifficulty(difficultyId);
+
+  // Assign tiles to positions with adjacency constraints
+  const positionToTileMap = assignTilesToPositions(tilesByType, squares);
 
   // Draw grid lines
   drawGridLines(gridSize, tileSize, lineSize, lineColor);
 
-  // Draw tiles
-  drawTiles(positions, tileSize, tileImages);
+  // Draw tiles using squares (calculate x/y from row/col)
+  drawTiles(squares, tileSize, lineSize, positionToTileMap);
 
-  // Update witch list
-  updateWitchList(tileImages);
+  // Update witch list (extract all tiles from map)
+  const allTiles = positionToTileMap.filter(t => t !== null);
+  updateWitchList(allTiles);
 
-  console.log(`Grid drawn: ${positions.length} tiles`);
+  console.log(`Grid drawn: ${squares.length} tiles`);
 }
 
 /**
@@ -442,19 +669,33 @@ function drawGridLines(gridSize, tileSize, lineSize, lineColor) {
 
 /**
  * Draw tiles with images
+ * @param {Array} squares - Grid squares with {num, row, col}
+ * @param {number} tileSize - Size of tiles
+ * @param {number} lineSize - Size of grid lines
+ * @param {Array} positionToTileMap - Array mapping square number to tile object
  */
-function drawTiles(positions, tileSize, tileDataArray) {
+function drawTiles(squares, tileSize, lineSize, positionToTileMap) {
   const board = document.getElementById("board");
 
-  positions.forEach((pos, index) => {
-    const tileData = tileDataArray[index];
+  squares.forEach((square) => {
+    const tileData = positionToTileMap[square.num];
+
+    // Skip if no tile data at this position
+    if (!tileData) {
+      console.warn(`No tile data at square ${square.num}`);
+      return;
+    }
+
+    // Calculate x/y coordinates from row/col
+    const x = square.col * (tileSize + lineSize);
+    const y = square.row * (tileSize + lineSize);
 
     const img = document.createElement("img");
     img.className = "tile-image";
     img.src = tileData.imagePath;
-    img.alt = `Tile ${pos.square}`;
-    img.style.left = `${pos.x}px`;
-    img.style.top = `${pos.y}px`;
+    img.alt = `Tile ${square.num}`;
+    img.style.left = `${x}px`;
+    img.style.top = `${y}px`;
     img.style.width = `${tileSize}px`;
     img.style.height = `${tileSize}px`;
 
@@ -484,7 +725,7 @@ function updateWitchList(tileDataArray) {
   const seenNames = new Set();
 
   for (const tileData of tileDataArray) {
-    if (tileData.type === 'witch' && tileData.name_text && !seenNames.has(tileData.name_text)) {
+    if (tileData.type === 'gameTile' && tileData.name_text && !seenNames.has(tileData.name_text)) {
       uniqueWitches.push(tileData);
       seenNames.add(tileData.name_text);
     }

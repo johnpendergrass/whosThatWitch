@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** Basic Selection System Complete, Next: Adjacency Constraints & Clickable Tiles
+**Status:** Tile Placement Algorithm Complete, Next: Clickable Tiles & Flip Interaction
 **Date Started:** October 11, 2025
-**Last Updated:** October 15, 2025 - 20:00
+**Last Updated:** October 16, 2025 - 09:30
 
 ## Project Concept
 
@@ -203,17 +203,20 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - ✅ Grid displays with correct tile positions
 - ✅ Simplified square position system (left→right, top→bottom)
 - ✅ Group-based character selection with numeric groups
-- ✅ Matching pairs created (same object reference)
-- ✅ Bomb and bonus tiles added
+- ✅ Matching pairs created with pairId tracking
+- ✅ Bomb and bonus tiles use dedicated images
 - ✅ Full metadata preserved (name_text, description_text)
-- ✅ Random shuffle implemented
+- ✅ Adjacency constraint algorithm implemented
+- ✅ Special tiles never adjacent (including diagonals)
+- ✅ GameTile pairs avoid adjacency (100-retry algorithm)
 - ✅ Grid lines draw between tiles
 - ✅ Three difficulty levels function
 - ✅ Witch list UI displays to the right
 - ✅ Hover tooltips show witch descriptions
+- ✅ Code constants as single source of truth
+- ✅ x/y calculated from row/col (no JSON positions)
 
 **To Be Implemented:**
-- ⚠️ Adjacency constraints (avoid matching pairs next to each other)
 - ❌ Clickable tiles (event listeners)
 - ❌ Tile flip interaction (face-down → face-up)
 - ❌ Face-down tile design
@@ -223,32 +226,68 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - ❌ Witch identification input/validation
 - ❌ Scoring system
 
-### Basic Selection Strategy (IMPLEMENTED v0.05)
+### Tile Selection & Placement Strategy (IMPLEMENTED v0.06)
 
-**Algorithm:**
+**Selection Algorithm:**
 1. Load character-grouped database (`witches.json`) with numeric group field (1-25)
 2. Build `groupedWitches` organizing images by group number
 3. Calculate unique images needed: `imageTiles / 2`
 4. Randomly select that many group numbers
 5. For each selected group: randomly pick one character
 6. For that character: randomly pick one image
-7. Store full tile data: `{imagePath, name_text, description_text, type: 'witch'}`
+7. Store full tile data: `{imagePath, name_text, description_text, type: 'gameTile', pairId: groupNum}`
 8. Create matching pairs (push same object twice for matching)
-9. Add bomb tiles: `{imagePath, type: 'bomb'}`
-10. Add bonus tiles: `{imagePath, type: 'bonus'}`
-11. Shuffle all tiles randomly
+9. Create separate bomb tiles: `{imagePath, type: 'bomb'}`
+10. Create separate bonus tiles: `{imagePath, type: 'bonus'}`
+11. Return organized by type: `{gameTiles, bombs, bonus}` (NO shuffle at this stage)
 
-**Why Group-Based:**
+**Placement Algorithm with Adjacency Constraints:**
+
+**Phase 1: Special Tiles (Bombs & Bonus)**
+- Placed first with strict adjacency checking
+- Each special tile placed randomly in position NOT adjacent (including diagonals) to previously placed special tiles
+- Example: If bonus at center, bombs exclude all 8 surrounding squares
+- Ensures special tiles are well-separated visually
+
+**Phase 2: GameTiles (Matching Pairs) - Retry Algorithm**
+- Goal: Place matching pairs so they are NOT adjacent (including diagonals)
+- Up to 100 retry attempts:
+  1. Clear any gameTiles from previous failed attempt (keep special tiles)
+  2. For each pairId (unique pair):
+     - Place first tile randomly in any available square
+     - Place second tile randomly in non-adjacent square (excludes 8 surrounding squares)
+     - If no non-adjacent square available → FAIL attempt, retry from step 1
+  3. If all pairs placed successfully → SUCCESS, exit loop
+- After 100 failed attempts: **Fallback Placement**
+  - Clear any partial gameTile placements
+  - Place all gameTiles randomly (accept adjacency)
+  - Ensures game always completes
+
+**Fallback Rationale:**
+- EASY (3×3) grid often impossible to satisfy constraints with 4 pairs
+- MEDIUM/HARD usually succeed within 1-20 attempts
+- Fallback ensures playability over perfect adherence
+- Players unlikely to notice/care on EASY difficulty
+
+**Why Group-Based Selection:**
 - Groups 1-5: Multi-character thematic sets appear together
 - Groups 6-25: Individual characters can be mixed freely
 - System extensible (new groups = new group numbers)
 - Metadata preserved for "Who's That Witch?" feature
 - Each game has variety of different characters
 
-**Current Limitations:**
-- No adjacency constraints yet (matching pairs can be next to each other)
-- Random shuffle only (no strategic placement)
-- Simple approach prioritizes clarity over optimization
+**Why pairId:**
+- Explicit identification of matching pairs (uses group number)
+- Easier debugging and pair detection
+- More maintainable than object reference comparison
+- Can filter/find pairs: `gameTiles.filter(t => t.pairId === 5)`
+
+**Data Source: Code Constants as Single Source of Truth**
+- Position data comes from `EASY_SQUARES`, `MEDIUM_SQUARES`, `HARD_SQUARES` (in code)
+- Each square: `{num: index, row: row, col: col}`
+- x/y coordinates calculated from row/col: `x = col * (tileSize + lineSize)`
+- JSON only used for configuration values, not positions
+- Eliminates index mismatch bugs between arrays
 
 ## Parent App Integration
 
@@ -291,7 +330,7 @@ Math works perfectly for all three grid sizes:
 
 ## Current Implementation Status
 
-**Completed (v0.05):**
+**Completed (v0.06):**
 - ✅ Screen and board layout (950×714, 502×502)
 - ✅ Grid system with three difficulties
 - ✅ Simplified square position arrays (left→right, top→bottom)
@@ -300,17 +339,21 @@ Math works perfectly for all three grid sizes:
 - ✅ Configuration system (fully theme-agnostic)
 - ✅ Image processing script (166/124/99 sizes)
 - ✅ Character database with full metadata and numeric groups (1-25)
-- ✅ Group-based random selection
-- ✅ Matching pairs created (same object reference)
-- ✅ Bomb and bonus tile addition
-- ✅ Random shuffle implementation
+- ✅ Group-based random selection with pairId tracking
+- ✅ Matching pairs created (with pairId: groupNum)
+- ✅ Dedicated bomb and bonus tile images
+- ✅ Adjacency constraint algorithm:
+  - ✅ Special tiles never adjacent (including diagonals)
+  - ✅ GameTile pairs avoid adjacency (100-retry algorithm)
+  - ✅ Fallback placement after 100 attempts
+- ✅ Code constants as single source of truth
+- ✅ x/y coordinates calculated from row/col
 - ✅ Full metadata preservation on tiles
 - ✅ Witch list UI to the right of grid
 - ✅ Hover tooltips for witch descriptions
-- ✅ Helper functions (shuffleArray, getRandomFromArray)
+- ✅ Helper functions (shuffleArray, getRandomFromArray, areAdjacent, getAvailablePositions)
 
 **In Progress:**
-- 🔄 Adjacency constraints (avoid adjacent matching pairs)
 - 🔄 Clickable tiles (next priority)
 
 **Not Started:**
@@ -336,13 +379,13 @@ Following John's preferences:
 
 ## Next Major Tasks
 
-1. **Implement adjacency constraints** - Avoid matching pairs being placed next to each other (immediate)
-2. **Make tiles clickable** - Add event listeners and visual feedback
-3. **Format description text** - Improve tooltip display and positioning
-4. **Design tile back** appearance for face-down state
-5. **Implement tile flip** interaction and animation
-6. **Add match detection** logic
-7. **Implement bomb tile** click handling
-8. **Create identification UI** for "Who's That Witch?"
-9. **Implement scoring** system
-10. **Add game completion** detection and win screen
+1. **Make tiles clickable** - Add event listeners and visual feedback (immediate)
+2. **Design tile back** appearance for face-down state
+3. **Implement tile flip** interaction and animation
+4. **Add match detection** logic using pairId comparison
+5. **Implement bomb tile** click handling and penalties
+6. **Implement bonus tile** click handling and rewards
+7. **Create identification UI** for "Who's That Witch?"
+8. **Implement scoring** system (matches, identification, bombs, bonuses)
+9. **Add game completion** detection and win screen
+10. **Format description text** - Improve tooltip display and positioning (optional enhancement)
