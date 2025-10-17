@@ -113,6 +113,13 @@ body {
   z-index: 10;
 }
 
+/* Completed tile hover highlight - stronger golden glow */
+.tile-completed-glow {
+  box-shadow: 0 0 25px 10px gold, 0 0 40px 15px rgba(255, 215, 0, 0.8);
+  border-radius: 4px;
+  z-index: 10;
+}
+
 /* 
 NOTE that to change the opacity of the muted tile, you can change the value of the --tile-muted-opacity variable in the :root selector. The item just below this comment is NOT where you change the opacity of the muted tile.
 
@@ -138,12 +145,23 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
   z-index: 1;
 }
 
+/* Halftone overlay (middle layer, for completed witches) */
+.tile-halftone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
 /* Face-down image (top layer, covers face-up) */
 .tile-face-down {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 3;
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
 }
@@ -151,6 +169,47 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
 /* Legacy tile-image class (kept for compatibility) */
 .tile-image {
   position: absolute;
+}
+
+/* WHO AM I? banner - positioned above character list */
+#witch-banner {
+  position: absolute;
+  left: 570px;
+  top: 90px;
+  width: 350px;
+  font-family: "Barrio", cursive;
+  font-size: 40px;
+  color: #9a4f03;
+  opacity: 0.3;
+  text-align: center;
+  z-index: 200;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 15px #7b2d8e, 0 0 25px #7b2d8e;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  pointer-events: none;
+}
+
+/* Keyframe animation for banner opacity pulsing */
+@keyframes witch-banner-pulse {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+/* Active state when player needs to identify witch (static) */
+#witch-banner.witch-banner-active {
+  opacity: 1;
+}
+
+/* Animated state (first 5 activations only) */
+#witch-banner.witch-banner-animated {
+  animation: witch-banner-pulse 2s ease-in-out infinite;
 }
 
 /* Status box - positioned to the right of the board */
@@ -161,7 +220,7 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
   width: 350px;
   height: 542px;
   background: #000;
-  border: 2px solid #999;
+  border: 2px solid #000;
 }
 
 /* Character list - inside status box */
@@ -170,14 +229,14 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
   max-height: 100%;
   color: #ffffff;
   font-size: 16px;
-  padding: 40px 30px 60px 20px;
+  padding: 10px 30px 60px 20px;
   box-sizing: border-box;
   overflow-y: auto;
 }
 
 .character-item {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 12px;
   position: relative;
@@ -199,6 +258,12 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
 .character-item[data-completed="true"] .character-name {
   color: #ffff00;
   cursor: help;
+}
+
+/* Decoy character strikethrough when all real witches found */
+.character-decoy-strikethrough {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 .character-description {

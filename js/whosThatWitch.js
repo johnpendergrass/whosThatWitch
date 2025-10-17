@@ -6,11 +6,13 @@
 let gameConfig = null;
 let tileData = null;
 let imageList = null;
-let groupedWitches = null;  // Images organized by group number
+let groupedWitches = null; // Images organized by group number
 
 // Game state variables for tile interaction
-let selectedTiles = [];  // Currently selected tiles (max 2)
-let gameState = 'WAITING_FOR_FIRST_TILE';  // Track game flow
+let selectedTiles = []; // Currently selected tiles (max 2)
+let gameState = "WAITING_FOR_FIRST_TILE"; // Track game flow
+let currentTileSize = null; // Track current difficulty's tile size for halftone images
+let bannerActivationCount = 0; // Track how many times "WHO AM I?" banner has been activated
 
 // Configuration file paths (easy to find and change)
 const gameConfigFile = "json/gameConfig.json";
@@ -20,38 +22,62 @@ const witchesFile = "json/witches.json";
 // Grid square positions (left to right, top to bottom)
 // Each position has: num (square index), row, col
 const EASY_SQUARES = [
-  {num: 0, row: 0, col: 0}, {num: 1, row: 0, col: 1},
-  {num: 2, row: 0, col: 2}, {num: 3, row: 1, col: 0},
-  {num: 4, row: 1, col: 1}, {num: 5, row: 1, col: 2},
-  {num: 6, row: 2, col: 0}, {num: 7, row: 2, col: 1},
-  {num: 8, row: 2, col: 2}
+  { num: 0, row: 0, col: 0 },
+  { num: 1, row: 0, col: 1 },
+  { num: 2, row: 0, col: 2 },
+  { num: 3, row: 1, col: 0 },
+  { num: 4, row: 1, col: 1 },
+  { num: 5, row: 1, col: 2 },
+  { num: 6, row: 2, col: 0 },
+  { num: 7, row: 2, col: 1 },
+  { num: 8, row: 2, col: 2 },
 ];
 
 const MEDIUM_SQUARES = [
-  {num: 0, row: 0, col: 0}, {num: 1, row: 0, col: 1},
-  {num: 2, row: 0, col: 2}, {num: 3, row: 0, col: 3},
-  {num: 4, row: 1, col: 0}, {num: 5, row: 1, col: 1},
-  {num: 6, row: 1, col: 2}, {num: 7, row: 1, col: 3},
-  {num: 8, row: 2, col: 0}, {num: 9, row: 2, col: 1},
-  {num: 10, row: 2, col: 2}, {num: 11, row: 2, col: 3},
-  {num: 12, row: 3, col: 0}, {num: 13, row: 3, col: 1},
-  {num: 14, row: 3, col: 2}, {num: 15, row: 3, col: 3}
+  { num: 0, row: 0, col: 0 },
+  { num: 1, row: 0, col: 1 },
+  { num: 2, row: 0, col: 2 },
+  { num: 3, row: 0, col: 3 },
+  { num: 4, row: 1, col: 0 },
+  { num: 5, row: 1, col: 1 },
+  { num: 6, row: 1, col: 2 },
+  { num: 7, row: 1, col: 3 },
+  { num: 8, row: 2, col: 0 },
+  { num: 9, row: 2, col: 1 },
+  { num: 10, row: 2, col: 2 },
+  { num: 11, row: 2, col: 3 },
+  { num: 12, row: 3, col: 0 },
+  { num: 13, row: 3, col: 1 },
+  { num: 14, row: 3, col: 2 },
+  { num: 15, row: 3, col: 3 },
 ];
 
 const HARD_SQUARES = [
-  {num: 0, row: 0, col: 0}, {num: 1, row: 0, col: 1},
-  {num: 2, row: 0, col: 2}, {num: 3, row: 0, col: 3},
-  {num: 4, row: 0, col: 4}, {num: 5, row: 1, col: 0},
-  {num: 6, row: 1, col: 1}, {num: 7, row: 1, col: 2},
-  {num: 8, row: 1, col: 3}, {num: 9, row: 1, col: 4},
-  {num: 10, row: 2, col: 0}, {num: 11, row: 2, col: 1},
-  {num: 12, row: 2, col: 2}, {num: 13, row: 2, col: 3},
-  {num: 14, row: 2, col: 4}, {num: 15, row: 3, col: 0},
-  {num: 16, row: 3, col: 1}, {num: 17, row: 3, col: 2},
-  {num: 18, row: 3, col: 3}, {num: 19, row: 3, col: 4},
-  {num: 20, row: 4, col: 0}, {num: 21, row: 4, col: 1},
-  {num: 22, row: 4, col: 2}, {num: 23, row: 4, col: 3},
-  {num: 24, row: 4, col: 4}
+  { num: 0, row: 0, col: 0 },
+  { num: 1, row: 0, col: 1 },
+  { num: 2, row: 0, col: 2 },
+  { num: 3, row: 0, col: 3 },
+  { num: 4, row: 0, col: 4 },
+  { num: 5, row: 1, col: 0 },
+  { num: 6, row: 1, col: 1 },
+  { num: 7, row: 1, col: 2 },
+  { num: 8, row: 1, col: 3 },
+  { num: 9, row: 1, col: 4 },
+  { num: 10, row: 2, col: 0 },
+  { num: 11, row: 2, col: 1 },
+  { num: 12, row: 2, col: 2 },
+  { num: 13, row: 2, col: 3 },
+  { num: 14, row: 2, col: 4 },
+  { num: 15, row: 3, col: 0 },
+  { num: 16, row: 3, col: 1 },
+  { num: 17, row: 3, col: 2 },
+  { num: 18, row: 3, col: 3 },
+  { num: 19, row: 3, col: 4 },
+  { num: 20, row: 4, col: 0 },
+  { num: 21, row: 4, col: 1 },
+  { num: 22, row: 4, col: 2 },
+  { num: 23, row: 4, col: 3 },
+  { num: 24, row: 4, col: 4 },
 ];
 
 // Wait for DOM to be ready
@@ -170,7 +196,6 @@ function buildGroupedWitches() {
   console.log(`Grouped witches built: ${groupCount} groups`);
 }
 
-
 /**
  * Setup button click handlers dynamically from config
  */
@@ -182,9 +207,9 @@ function setupButtons() {
 
   // Map difficulty IDs to button images
   const buttonImages = {
-    "easyTiles": "assets/other/_easyButton_80x30.png",
-    "mediumTiles": "assets/other/_mediumButton_80x30.png",
-    "hardTiles": "assets/other/_hardButton_80x30.png"
+    easyTiles: "assets/other/_easyButton_80x30.png",
+    mediumTiles: "assets/other/_mediumButton_80x30.png",
+    hardTiles: "assets/other/_hardButton_80x30.png",
   };
 
   // Create image buttons from config
@@ -254,10 +279,14 @@ function areAdjacent(pos1, pos2, includeDiagonal = true) {
  * @param {Array} excludeAdjacentTo - Positions to avoid adjacency with
  * @returns {Array} Available positions
  */
-function getAvailablePositions(allPositions, filledPositions, excludeAdjacentTo = []) {
-  return allPositions.filter(pos => {
+function getAvailablePositions(
+  allPositions,
+  filledPositions,
+  excludeAdjacentTo = []
+) {
+  return allPositions.filter((pos) => {
     // Skip if already filled
-    if (filledPositions.some(fp => fp.num === pos.num)) {
+    if (filledPositions.some((fp) => fp.num === pos.num)) {
       return false;
     }
 
@@ -311,11 +340,15 @@ function buildImagePath(baseName, size) {
  * @returns {Array} Squares array with {num, row, col}
  */
 function getSquaresForDifficulty(difficultyId) {
-  switch(difficultyId) {
-    case 'easyTiles': return EASY_SQUARES;
-    case 'mediumTiles': return MEDIUM_SQUARES;
-    case 'hardTiles': return HARD_SQUARES;
-    default: return MEDIUM_SQUARES;
+  switch (difficultyId) {
+    case "easyTiles":
+      return EASY_SQUARES;
+    case "mediumTiles":
+      return MEDIUM_SQUARES;
+    case "hardTiles":
+      return HARD_SQUARES;
+    default:
+      return MEDIUM_SQUARES;
   }
 }
 
@@ -334,71 +367,56 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
   // Calculate how many unique images we need (each appears twice)
   const uniqueImagesNeeded = imageTiles / 2;
 
-  // Get all available group numbers
-  const allGroups = Object.keys(groupedWitches).map(Number);
+  // NEW ALGORITHM: Select witch characters directly (not groups)
+  // This ensures equal probability for all witches
+  const allWitchNames = Object.keys(imageList); // All 25 witch character names
 
-  // Select 2 MORE groups than needed to guarantee no duplicates after deduplication
-  const groupsToSelect = Math.min(uniqueImagesNeeded + 2, allGroups.length);
+  // Shuffle all witch names and select the number we need
+  const shuffledWitches = shuffleArray([...allWitchNames]);
+  const selectedWitchNames = shuffledWitches.slice(0, uniqueImagesNeeded);
 
-  // Randomly select groups
-  const selectedGroups = [];
-  const availableGroups = [...allGroups];
-  for (let i = 0; i < groupsToSelect; i++) {
-    if (availableGroups.length === 0) break;
-    const randomIndex = Math.floor(Math.random() * availableGroups.length);
-    selectedGroups.push(availableGroups[randomIndex]);
-    availableGroups.splice(randomIndex, 1);
-  }
+  console.log(
+    `Selected ${selectedWitchNames.length} witches (need ${uniqueImagesNeeded}):`,
+    selectedWitchNames
+  );
 
-  console.log(`Selected ${selectedGroups.length} groups (need ${uniqueImagesNeeded} unique witches):`, selectedGroups);
-
-  // For each selected group, pick one character and one image
+  // For each selected witch, pick one random image
   const selectedImages = [];
-  const seenWitchNames = new Set();  // Track unique witch names to prevent duplicates
 
-  for (const groupNum of selectedGroups) {
-    const charactersInGroup = groupedWitches[groupNum];
-    const characterNames = Object.keys(charactersInGroup);
+  // Generate unique pairIds for each witch (can't use group number since multiple witches share groups)
+  let nextPairId = 1;
 
-    // Randomly select one character from this group
-    const selectedCharacter = getRandomFromArray(characterNames);
-    const characterImages = charactersInGroup[selectedCharacter];
+  for (const witchName of selectedWitchNames) {
+    const characterImages = imageList[witchName];
 
-    // Randomly select one image from this character
+    // Randomly select one image from this character's images
     const selectedImage = getRandomFromArray(characterImages);
-
-    // Check if we've already selected this witch name
-    if (seenWitchNames.has(selectedImage.name_text)) {
-      console.log(`Skipping duplicate witch: ${selectedImage.name_text} from group ${groupNum}`);
-      continue;  // Skip this duplicate
-    }
 
     // Build the image path
     const imagePath = buildImagePath(selectedImage.filename, tileSize);
 
     // Store full tile data with metadata
+    // Use a unique pairId for each witch (NOT group number, since multiple witches can share a group)
     const tileData = {
       imagePath: imagePath,
       name_text: selectedImage.name_text,
       description_text: selectedImage.description_text,
-      type: 'gameTile',
-      pairId: groupNum  // Unique identifier for matching pairs
+      type: "gameTile",
+      pairId: nextPairId, // Use unique pairId for this witch's pair
     };
     selectedImages.push(tileData);
-    seenWitchNames.add(selectedImage.name_text);
 
-    console.log(`Group ${groupNum}: selected ${selectedCharacter} - ${selectedImage.filename} (${selectedImage.name_text})`);
+    console.log(
+      `Witch "${witchName}": selected ${selectedImage.filename} (${selectedImage.name_text}, group ${selectedImage.group}, pairId ${nextPairId})`
+    );
 
-    // Stop if we have enough unique witches
-    if (selectedImages.length >= uniqueImagesNeeded) {
-      break;
-    }
+    nextPairId++; // Increment for next witch
   }
 
   // Create pairs (each image twice)
   for (const tileData of selectedImages) {
     tiles.push(tileData);
-    tiles.push(tileData);  // Same object reference for matching
+    tiles.push(tileData); // Same object reference for matching
   }
 
   // Build separate arrays for bombs
@@ -407,7 +425,7 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
   for (let i = 0; i < bombTiles; i++) {
     bombArray.push({
       imagePath: bombPath,
-      type: 'bomb'
+      type: "bomb",
     });
   }
 
@@ -417,17 +435,19 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
   for (let i = 0; i < bonusTiles; i++) {
     bonusArray.push({
       imagePath: bonusPath,
-      type: 'bonus'
+      type: "bonus",
     });
   }
 
-  console.log(`Created tiles organized by type: ${imageTiles} gameTiles (${uniqueImagesNeeded} pairs) + ${bombTiles} bombs + ${bonusTiles} bonus`);
+  console.log(
+    `Created tiles organized by type: ${imageTiles} gameTiles (${uniqueImagesNeeded} pairs) + ${bombTiles} bombs + ${bonusTiles} bonus`
+  );
 
   // Return organized by type (no shuffle yet - will be done during placement)
   return {
     gameTiles: tiles,
     bombs: bombArray,
-    bonus: bonusArray
+    bonus: bonusArray,
   };
 }
 
@@ -446,11 +466,19 @@ function assignTilesToPositions(tilesByType, squares) {
   const specialTiles = [...tilesByType.bombs, ...tilesByType.bonus];
 
   for (const specialTile of specialTiles) {
-    const available = getAvailablePositions(squares, filledSquares, excludeAdjacent);
+    const available = getAvailablePositions(
+      squares,
+      filledSquares,
+      excludeAdjacent
+    );
 
     if (available.length === 0) {
-      console.warn("No available positions for special tile! Using any unfilled position.");
-      const unfilled = squares.filter(s => !filledSquares.some(f => f.num === s.num));
+      console.warn(
+        "No available positions for special tile! Using any unfilled position."
+      );
+      const unfilled = squares.filter(
+        (s) => !filledSquares.some((f) => f.num === s.num)
+      );
       if (unfilled.length > 0) {
         const selectedSquare = getRandomFromArray(unfilled);
         result[selectedSquare.num] = specialTile;
@@ -465,7 +493,9 @@ function assignTilesToPositions(tilesByType, squares) {
     filledSquares.push(selectedSquare);
     excludeAdjacent.push(selectedSquare);
 
-    console.log(`Placed ${specialTile.type} at position ${selectedSquare.num} (row ${selectedSquare.row}, col ${selectedSquare.col})`);
+    console.log(
+      `Placed ${specialTile.type} at position ${selectedSquare.num} (row ${selectedSquare.row}, col ${selectedSquare.col})`
+    );
   }
 
   // Step 2: Place gameTiles with adjacency constraints for matching pairs
@@ -473,13 +503,17 @@ function assignTilesToPositions(tilesByType, squares) {
   let placementSuccessful = false;
 
   // Get unique pairIds
-  const uniquePairIds = [...new Set(tilesByType.gameTiles.map(t => t.pairId))];
-  console.log(`Attempting to place ${uniquePairIds.length} pairs with adjacency constraints...`);
+  const uniquePairIds = [
+    ...new Set(tilesByType.gameTiles.map((t) => t.pairId)),
+  ];
+  console.log(
+    `Attempting to place ${uniquePairIds.length} pairs with adjacency constraints...`
+  );
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     // Reset gameTile placements (keep special tiles)
     for (let i = 0; i < result.length; i++) {
-      if (result[i] && result[i].type === 'gameTile') {
+      if (result[i] && result[i].type === "gameTile") {
         result[i] = null;
       }
     }
@@ -491,17 +525,22 @@ function assignTilesToPositions(tilesByType, squares) {
     // Try to place each pair
     for (const pairId of uniquePairIds) {
       // Get both tiles with this pairId
-      const tilesWithPairId = tilesByType.gameTiles.filter(t => t.pairId === pairId);
+      const tilesWithPairId = tilesByType.gameTiles.filter(
+        (t) => t.pairId === pairId
+      );
 
       if (tilesWithPairId.length !== 2) {
-        console.error(`Expected 2 tiles with pairId ${pairId}, found ${tilesWithPairId.length}`);
+        console.error(
+          `Expected 2 tiles with pairId ${pairId}, found ${tilesWithPairId.length}`
+        );
         continue;
       }
 
       // Get available positions (not filled by special tiles or other gameTiles this attempt)
-      const availableForFirst = squares.filter(s =>
-        !filledSquares.some(f => f.num === s.num) &&
-        !gameTileFilledSquares.some(f => f.num === s.num)
+      const availableForFirst = squares.filter(
+        (s) =>
+          !filledSquares.some((f) => f.num === s.num) &&
+          !gameTileFilledSquares.some((f) => f.num === s.num)
       );
 
       if (availableForFirst.length === 0) {
@@ -515,10 +554,11 @@ function assignTilesToPositions(tilesByType, squares) {
       gameTileFilledSquares.push(firstSquare);
 
       // Get available positions for second tile (not adjacent to first)
-      const availableForSecond = squares.filter(s =>
-        !filledSquares.some(f => f.num === s.num) &&
-        !gameTileFilledSquares.some(f => f.num === s.num) &&
-        !areAdjacent(s, firstSquare, true)
+      const availableForSecond = squares.filter(
+        (s) =>
+          !filledSquares.some((f) => f.num === s.num) &&
+          !gameTileFilledSquares.some((f) => f.num === s.num) &&
+          !areAdjacent(s, firstSquare, true)
       );
 
       if (availableForSecond.length === 0) {
@@ -535,18 +575,22 @@ function assignTilesToPositions(tilesByType, squares) {
 
     if (!attemptFailed) {
       placementSuccessful = true;
-      console.log(`Successfully placed all pairs with adjacency constraints on attempt ${attempt}`);
+      console.log(
+        `Successfully placed all pairs with adjacency constraints on attempt ${attempt}`
+      );
       break;
     }
   }
 
   // If we failed after max attempts, place remaining pairs randomly (accept adjacency)
   if (!placementSuccessful) {
-    console.warn(`Could not place all pairs non-adjacently after ${maxAttempts} attempts. Placing remaining randomly.`);
+    console.warn(
+      `Could not place all pairs non-adjacently after ${maxAttempts} attempts. Placing remaining randomly.`
+    );
 
     // Clear any partially placed gameTiles from the failed 100th attempt
     for (let i = 0; i < result.length; i++) {
-      if (result[i] && result[i].type === 'gameTile') {
+      if (result[i] && result[i].type === "gameTile") {
         result[i] = null;
       }
     }
@@ -554,35 +598,52 @@ function assignTilesToPositions(tilesByType, squares) {
     // DIAGNOSTIC: Check state before fallback placement
     console.log(`FALLBACK DIAGNOSTICS:`);
     console.log(`  Total squares: ${squares.length}`);
-    console.log(`  filledSquares (special tiles): ${filledSquares.length}`, filledSquares.map(s => s.num));
+    console.log(
+      `  filledSquares (special tiles): ${filledSquares.length}`,
+      filledSquares.map((s) => s.num)
+    );
     console.log(`  gameTiles to place: ${tilesByType.gameTiles.length}`);
 
     // Count nulls in result after clearing (should equal gameTiles to place)
-    const nullsBefore = result.filter(r => r === null).length;
+    const nullsBefore = result.filter((r) => r === null).length;
     console.log(`  Null positions in result after clearing: ${nullsBefore}`);
 
     // Get remaining empty squares (not filled by special tiles)
-    const remainingSquares = squares.filter(s =>
-      !filledSquares.some(f => f.num === s.num)
+    const remainingSquares = squares.filter(
+      (s) => !filledSquares.some((f) => f.num === s.num)
     );
-    console.log(`  remainingSquares: ${remainingSquares.length}`, remainingSquares.map(s => s.num));
+    console.log(
+      `  remainingSquares: ${remainingSquares.length}`,
+      remainingSquares.map((s) => s.num)
+    );
 
     // Since we cleared all gameTiles at start of last failed attempt, place all of them
     const shuffledTiles = shuffleArray([...tilesByType.gameTiles]);
     const shuffledSquares = shuffleArray([...remainingSquares]);
 
     console.log(`  shuffledTiles: ${shuffledTiles.length}`);
-    console.log(`  shuffledSquares: ${shuffledSquares.length}`, shuffledSquares.map(s => s.num));
+    console.log(
+      `  shuffledSquares: ${shuffledSquares.length}`,
+      shuffledSquares.map((s) => s.num)
+    );
 
-    for (let i = 0; i < shuffledTiles.length && i < shuffledSquares.length; i++) {
+    for (
+      let i = 0;
+      i < shuffledTiles.length && i < shuffledSquares.length;
+      i++
+    ) {
       result[shuffledSquares[i].num] = shuffledTiles[i];
-      console.log(`    Placed tile at square ${shuffledSquares[i].num} (pairId: ${shuffledTiles[i].pairId})`);
+      console.log(
+        `    Placed tile at square ${shuffledSquares[i].num} (pairId: ${shuffledTiles[i].pairId})`
+      );
     }
 
     // Count nulls after placement
-    const nullsAfter = result.filter(r => r === null).length;
+    const nullsAfter = result.filter((r) => r === null).length;
     console.log(`  Null positions in result after: ${nullsAfter}`);
-    console.log(`  Placed ${shuffledTiles.length} gameTiles randomly (adjacency accepted)`);
+    console.log(
+      `  Placed ${shuffledTiles.length} gameTiles randomly (adjacency accepted)`
+    );
   }
 
   return result;
@@ -596,7 +657,9 @@ function assignTilesToPositions(tilesByType, squares) {
  */
 function getTileImages(difficultyId, tileSize) {
   // Find the difficulty config
-  const difficultyConfig = gameConfig.difficulties.find(d => d.id === difficultyId);
+  const difficultyConfig = gameConfig.difficulties.find(
+    (d) => d.id === difficultyId
+  );
 
   if (!difficultyConfig) {
     console.error(`Difficulty config not found for: ${difficultyId}`);
@@ -605,7 +668,6 @@ function getTileImages(difficultyId, tileSize) {
 
   return selectImagesForDifficulty(difficultyConfig, tileSize);
 }
-
 
 /**
  * Clear all content from the board and witch list
@@ -640,13 +702,16 @@ function drawGrid(difficultyId) {
 
   // Reset game state
   selectedTiles = [];
-  gameState = 'WAITING_FOR_FIRST_TILE';
+  gameState = "WAITING_FOR_FIRST_TILE";
 
   const config = tileData[difficultyId];
   const gridSize = config.gridSize;
   const tileSize = config.tileSize;
   const lineSize = config.lineSize;
   const lineColor = config.lineColor;
+
+  // Track current tile size for halftone images
+  currentTileSize = tileSize;
 
   // Get tiles organized by type
   const tilesByType = getTileImages(difficultyId, tileSize);
@@ -667,7 +732,7 @@ function drawGrid(difficultyId) {
   drawTiles(squares, tileSize, lineSize, positionToTileMap, backImagePath);
 
   // Update character list (extract all tiles from map)
-  const allTiles = positionToTileMap.filter(t => t !== null);
+  const allTiles = positionToTileMap.filter((t) => t !== null);
   updateCharacterList(allTiles);
 
   console.log(`Grid drawn: ${squares.length} tiles`);
@@ -714,7 +779,13 @@ function drawGridLines(gridSize, tileSize, lineSize, lineColor) {
  * @param {Array} positionToTileMap - Array mapping square number to tile object
  * @param {string} backImagePath - Path to back image (same for all tiles)
  */
-function drawTiles(squares, tileSize, lineSize, positionToTileMap, backImagePath) {
+function drawTiles(
+  squares,
+  tileSize,
+  lineSize,
+  positionToTileMap,
+  backImagePath
+) {
   const board = document.getElementById("board");
 
   squares.forEach((square) => {
@@ -762,6 +833,15 @@ function drawTiles(squares, tileSize, lineSize, positionToTileMap, backImagePath
     faceUpImg.style.width = `${tileSize}px`;
     faceUpImg.style.height = `${tileSize}px`;
 
+    // Create halftone overlay (middle layer - for completed witches)
+    const halftoneImg = document.createElement("img");
+    halftoneImg.className = "tile-halftone";
+    halftoneImg.src = `assets/other/_halftone_blackSmall_${tileSize}.png`;
+    halftoneImg.alt = "Halftone overlay";
+    halftoneImg.style.width = `${tileSize}px`;
+    halftoneImg.style.height = `${tileSize}px`;
+    halftoneImg.style.opacity = "0"; // Initially hidden
+
     // Create face-down image (top layer - the back with broom)
     const faceDownImg = document.createElement("img");
     faceDownImg.className = "tile-face-down";
@@ -770,12 +850,15 @@ function drawTiles(squares, tileSize, lineSize, positionToTileMap, backImagePath
     faceDownImg.style.width = `${tileSize}px`;
     faceDownImg.style.height = `${tileSize}px`;
 
-    // Add both images to container
+    // Add all three images to container (bottom to top: face-up, halftone, face-down)
     tileContainer.appendChild(faceUpImg);
+    tileContainer.appendChild(halftoneImg);
     tileContainer.appendChild(faceDownImg);
 
     // Add click event listener
-    tileContainer.addEventListener('click', () => handleTileClick(tileContainer));
+    tileContainer.addEventListener("click", () =>
+      handleTileClick(tileContainer)
+    );
 
     // Add container to board
     board.appendChild(tileContainer);
@@ -788,7 +871,7 @@ function drawTiles(squares, tileSize, lineSize, positionToTileMap, backImagePath
  */
 function handleTileClick(tileContainer) {
   // Block clicks if we're checking a match
-  if (gameState === 'CHECKING_MATCH') {
+  if (gameState === "CHECKING_MATCH") {
     console.log("Currently checking match, ignoring click");
     return;
   }
@@ -813,18 +896,18 @@ function handleTileClick(tileContainer) {
 
   // Check if this is a special tile (bomb or bonus)
   const tileType = tileContainer.dataset.type;
-  if (tileType === 'bomb' || tileType === 'bonus') {
+  if (tileType === "bomb" || tileType === "bonus") {
     // Special tiles don't need matching - handle immediately
-    gameState = 'CHECKING_MATCH';  // Block other clicks
+    gameState = "CHECKING_MATCH"; // Block other clicks
     setTimeout(() => handleSpecialTile(tileContainer), 1000);
     return;
   }
 
   // Regular gameTile - proceed with matching logic
   if (selectedTiles.length === 1) {
-    gameState = 'WAITING_FOR_SECOND_TILE';
+    gameState = "WAITING_FOR_SECOND_TILE";
   } else if (selectedTiles.length === 2) {
-    gameState = 'CHECKING_MATCH';
+    gameState = "CHECKING_MATCH";
     // Check for match after brief delay to allow animation to complete
     setTimeout(() => checkForMatch(), 500);
   }
@@ -836,21 +919,23 @@ function handleTileClick(tileContainer) {
  */
 function revealTile(tileContainer) {
   // Get the face-down image
-  const faceDownImg = tileContainer.querySelector('.tile-face-down');
+  const faceDownImg = tileContainer.querySelector(".tile-face-down");
 
   // Animate to transparent (reveal the face-up image underneath)
-  faceDownImg.style.opacity = '0';
+  faceDownImg.style.opacity = "0";
 
   // Update state
   tileContainer.dataset.isFaceUp = "true";
 
   // Add highlight effect
-  tileContainer.classList.add('tile-selected');
+  tileContainer.classList.add("tile-selected");
 
   // Add to selected tiles array
   selectedTiles.push(tileContainer);
 
-  console.log(`Tile ${tileContainer.dataset.squareNum} revealed (type: ${tileContainer.dataset.type}, pairId: ${tileContainer.dataset.pairId})`);
+  console.log(
+    `Tile ${tileContainer.dataset.squareNum} revealed (type: ${tileContainer.dataset.type}, pairId: ${tileContainer.dataset.pairId})`
+  );
 }
 
 /**
@@ -859,14 +944,17 @@ function revealTile(tileContainer) {
  */
 function handleSpecialTile(tileContainer) {
   const tileType = tileContainer.dataset.type;
-  console.log(`Handling special tile: ${tileType} at position ${tileContainer.dataset.squareNum}`);
+  console.log(
+    `Handling special tile: ${tileType} at position ${tileContainer.dataset.squareNum}`
+  );
 
   // Get the face-down image
-  const faceDownImg = tileContainer.querySelector('.tile-face-down');
+  const faceDownImg = tileContainer.querySelector(".tile-face-down");
 
   // Read the muted opacity value from CSS variable
   const mutedOpacity = getComputedStyle(document.documentElement)
-    .getPropertyValue('--tile-muted-opacity').trim();
+    .getPropertyValue("--tile-muted-opacity")
+    .trim();
 
   // Set opacity to match CSS variable (overrides the inline 0 from revealTile)
   faceDownImg.style.opacity = mutedOpacity;
@@ -875,19 +963,19 @@ function handleSpecialTile(tileContainer) {
   tileContainer.dataset.isFaceUp = "true";
 
   // Remove golden highlight and add muted styling
-  tileContainer.classList.remove('tile-selected');
-  tileContainer.classList.add('tile-muted');
+  tileContainer.classList.remove("tile-selected");
+  tileContainer.classList.add("tile-muted");
 
   // Mark as matched so it can't be clicked again
   tileContainer.dataset.isMatched = "true";
 
   // Hide any previously selected gameTiles before clearing
-  selectedTiles.forEach(tile => {
-    if (tile !== tileContainer && tile.dataset.type === 'gameTile') {
-      const faceDownImg = tile.querySelector('.tile-face-down');
-      faceDownImg.style.opacity = '1';
+  selectedTiles.forEach((tile) => {
+    if (tile !== tileContainer && tile.dataset.type === "gameTile") {
+      const faceDownImg = tile.querySelector(".tile-face-down");
+      faceDownImg.style.opacity = "1";
       tile.dataset.isFaceUp = "false";
-      tile.classList.remove('tile-selected');
+      tile.classList.remove("tile-selected");
     }
   });
 
@@ -895,9 +983,11 @@ function handleSpecialTile(tileContainer) {
   selectedTiles = [];
 
   // Reset game state
-  gameState = 'WAITING_FOR_FIRST_TILE';
+  gameState = "WAITING_FOR_FIRST_TILE";
 
-  console.log(`${tileType} tile now muted and visible, ready for next selection`);
+  console.log(
+    `${tileType} tile now muted and visible, ready for next selection`
+  );
 }
 
 /**
@@ -916,14 +1006,34 @@ function checkForMatch() {
   const pairId1 = tile1.dataset.pairId;
   const pairId2 = tile2.dataset.pairId;
 
-  console.log(`Checking match: tile1 pairId=${pairId1}, tile2 pairId=${pairId2}`);
+  console.log(
+    `Checking match: tile1 pairId=${pairId1}, tile2 pairId=${pairId2}`
+  );
 
   // Check if they match
   if (pairId1 && pairId2 && pairId1 === pairId2) {
     // MATCH!
-    console.log("✓ MATCH! Tiles stay revealed (Phase 3 will handle witch selection)");
+    console.log(
+      "✓ MATCH! Tiles stay revealed (Phase 3 will handle witch selection)"
+    );
     // Reset state but keep tiles selected for Phase 3 (witch selection)
-    gameState = 'WAITING_FOR_WITCH_SELECTION';
+    gameState = "WAITING_FOR_WITCH_SELECTION";
+
+    // Activate the "WHO AM I?" banner
+    const banner = document.getElementById("witch-banner");
+    if (banner) {
+      // Increment activation counter
+      bannerActivationCount++;
+      console.log(`Banner activation #${bannerActivationCount}`);
+
+      // Always add active class (static highlight)
+      banner.classList.add("witch-banner-active");
+
+      // Only add animation class for first 5 activations
+      if (bannerActivationCount <= 1000) {
+        banner.classList.add("witch-banner-animated");
+      }
+    }
   } else {
     // NO MATCH
     console.log("✗ NO MATCH - hiding tiles after delay");
@@ -942,25 +1052,31 @@ function hideNonMatchingTiles() {
   }
 
   // Flip both tiles back
-  selectedTiles.forEach(tileContainer => {
+  selectedTiles.forEach((tileContainer) => {
     // Get face-down image
-    const faceDownImg = tileContainer.querySelector('.tile-face-down');
+    const faceDownImg = tileContainer.querySelector(".tile-face-down");
 
     // Animate back to opaque (hide face-up image)
-    faceDownImg.style.opacity = '1';
+    faceDownImg.style.opacity = "1";
 
     // Update state
     tileContainer.dataset.isFaceUp = "false";
 
     // Remove highlight
-    tileContainer.classList.remove('tile-selected');
+    tileContainer.classList.remove("tile-selected");
   });
 
   // Clear selected tiles
   selectedTiles = [];
 
   // Reset game state
-  gameState = 'WAITING_FOR_FIRST_TILE';
+  gameState = "WAITING_FOR_FIRST_TILE";
+
+  // Deactivate the "WHO AM I?" banner (remove both classes)
+  const banner = document.getElementById("witch-banner");
+  if (banner) {
+    banner.classList.remove("witch-banner-active", "witch-banner-animated");
+  }
 
   console.log("Tiles hidden, ready for next selection");
 }
@@ -971,7 +1087,7 @@ function hideNonMatchingTiles() {
  */
 function handleCharacterClick(characterItem) {
   // Only allow clicks when waiting for witch selection
-  if (gameState !== 'WAITING_FOR_WITCH_SELECTION') {
+  if (gameState !== "WAITING_FOR_WITCH_SELECTION") {
     console.log("Not in witch selection state, ignoring character click");
     return;
   }
@@ -1035,13 +1151,31 @@ function handleCorrectMatch(characterItem) {
   let isHovering = true; // User just clicked, so they're hovering
   let minTimeElapsed = false;
 
+  // Store reference to matched tiles for later use
+  const matchedTiles = [...selectedTiles];
+
   // Function to try removing tooltip (only if both conditions met)
   const tryRemoveTooltip = () => {
     if (minTimeElapsed && !isHovering) {
       successTooltip.remove();
+
+      // Apply halftone effect to both matched tiles
+      matchedTiles.forEach((tileContainer) => {
+        // Remove golden glow
+        tileContainer.classList.remove("tile-selected");
+
+        // Hide the face-down broom image
+        const faceDownImg = tileContainer.querySelector(".tile-face-down");
+        faceDownImg.style.opacity = "0";
+
+        // Show the halftone overlay
+        const halftoneImg = tileContainer.querySelector(".tile-halftone");
+        halftoneImg.style.opacity = "1";
+      });
+
       // Clean up listeners
-      characterItem.removeEventListener('mouseenter', handleMouseEnter);
-      characterItem.removeEventListener('mouseleave', handleMouseLeave);
+      characterItem.removeEventListener("mouseenter", handleMouseEnter);
+      characterItem.removeEventListener("mouseleave", handleMouseLeave);
     }
   };
 
@@ -1056,8 +1190,8 @@ function handleCorrectMatch(characterItem) {
   };
 
   // Add hover listeners
-  characterItem.addEventListener('mouseenter', handleMouseEnter);
-  characterItem.addEventListener('mouseleave', handleMouseLeave);
+  characterItem.addEventListener("mouseenter", handleMouseEnter);
+  characterItem.addEventListener("mouseleave", handleMouseLeave);
 
   // After 2 seconds, mark time as elapsed and try to remove
   setTimeout(() => {
@@ -1066,7 +1200,7 @@ function handleCorrectMatch(characterItem) {
   }, 2000);
 
   // Mark both tiles as matched (permanently completed)
-  selectedTiles.forEach(tileContainer => {
+  selectedTiles.forEach((tileContainer) => {
     tileContainer.dataset.isMatched = "true";
     // Tiles stay face-up with golden glow
   });
@@ -1075,14 +1209,66 @@ function handleCorrectMatch(characterItem) {
   characterItem.dataset.completed = "true";
 
   // Add checkmark to character name
-  const characterName = characterItem.querySelector('.character-name');
+  const characterName = characterItem.querySelector(".character-name");
   characterName.textContent = "✓ " + characterItem.dataset.characterName;
+
+  // Add hover functionality to highlight tiles when hovering over completed character name
+  const handleCompletedHoverEnter = () => {
+    // Find both tiles with this character name
+    const characterNameText = characterItem.dataset.characterName;
+    const tilesToHighlight = document.querySelectorAll(
+      `[data-name-text="${characterNameText}"][data-is-matched="true"]`
+    );
+
+    tilesToHighlight.forEach((tile) => {
+      // Hide halftone overlay
+      const halftoneImg = tile.querySelector(".tile-halftone");
+      if (halftoneImg) {
+        halftoneImg.style.opacity = "0";
+      }
+
+      // Add stronger golden glow
+      tile.classList.add("tile-completed-glow");
+    });
+  };
+
+  const handleCompletedHoverLeave = () => {
+    // Find both tiles with this character name
+    const characterNameText = characterItem.dataset.characterName;
+    const tilesToHighlight = document.querySelectorAll(
+      `[data-name-text="${characterNameText}"][data-is-matched="true"]`
+    );
+
+    tilesToHighlight.forEach((tile) => {
+      // Show halftone overlay
+      const halftoneImg = tile.querySelector(".tile-halftone");
+      if (halftoneImg) {
+        halftoneImg.style.opacity = "1";
+      }
+
+      // Remove golden glow
+      tile.classList.remove("tile-completed-glow");
+    });
+  };
+
+  // Add hover listeners for completed character
+  characterItem.addEventListener("mouseenter", handleCompletedHoverEnter);
+  characterItem.addEventListener("mouseleave", handleCompletedHoverLeave);
+
+  // Check if all real witches have been found (to strikethrough decoys)
+  checkGameCompletion();
+
+  // Deactivate the "WHO AM I?" banner (remove both classes)
+  const banner = document.getElementById("witch-banner");
+  if (banner) {
+    banner.classList.remove("witch-banner-active", "witch-banner-animated");
+  }
 
   // Clear selected tiles array
   selectedTiles = [];
 
   // Reset game state
-  gameState = 'WAITING_FOR_FIRST_TILE';
+  gameState = "WAITING_FOR_FIRST_TILE";
 
   console.log("Match completed successfully!");
 }
@@ -1126,8 +1312,8 @@ function handleIncorrectMatch(characterItem) {
       errorTooltip.remove();
       hideNonMatchingTiles();
       // Clean up listeners
-      characterItem.removeEventListener('mouseenter', handleMouseEnter);
-      characterItem.removeEventListener('mouseleave', handleMouseLeave);
+      characterItem.removeEventListener("mouseenter", handleMouseEnter);
+      characterItem.removeEventListener("mouseleave", handleMouseLeave);
     }
   };
 
@@ -1142,14 +1328,121 @@ function handleIncorrectMatch(characterItem) {
   };
 
   // Add hover listeners
-  characterItem.addEventListener('mouseenter', handleMouseEnter);
-  characterItem.addEventListener('mouseleave', handleMouseLeave);
+  characterItem.addEventListener("mouseenter", handleMouseEnter);
+  characterItem.addEventListener("mouseleave", handleMouseLeave);
 
   // After 2 seconds, mark time as elapsed and try to remove
   setTimeout(() => {
     minTimeElapsed = true;
     tryRemoveTooltip();
   }, 2000);
+}
+
+/**
+ * Check if all real witches have been found and strikethrough decoys
+ */
+function checkGameCompletion() {
+  // Get all character items from the list
+  const allCharacterItems = document.querySelectorAll(".character-item");
+
+  // Count total non-decoy characters
+  const realCharacters = Array.from(allCharacterItems).filter(
+    (item) => item.dataset.characterType === "gameTile"
+  );
+
+  // Count completed non-decoy characters
+  const completedRealCharacters = realCharacters.filter(
+    (item) => item.dataset.completed === "true"
+  );
+
+  console.log(
+    `Game completion check: ${completedRealCharacters.length}/${realCharacters.length} real witches found`
+  );
+
+  // If all real witches have been found, apply strikethrough to decoys
+  if (
+    completedRealCharacters.length === realCharacters.length &&
+    realCharacters.length > 0
+  ) {
+    console.log("🎉 All real witches found! Striking through decoys...");
+
+    // Find all decoy character items
+    const decoyItems = Array.from(allCharacterItems).filter(
+      (item) => item.dataset.characterType === "decoy"
+    );
+
+    // Add strikethrough class to each decoy's name
+    decoyItems.forEach((decoyItem) => {
+      const decoyName = decoyItem.querySelector(".character-name");
+      if (decoyName) {
+        decoyName.classList.add("character-decoy-strikethrough");
+      }
+    });
+
+    console.log(`Strikethrough applied to ${decoyItems.length} decoy names`);
+
+    // Check for any unrevealed bomb/bonus tiles
+    const allTiles = document.querySelectorAll(".tile-container");
+    const unrevealedSpecialTiles = Array.from(allTiles).filter((tile) => {
+      const tileType = tile.dataset.type;
+      const isFaceUp = tile.dataset.isFaceUp === "true";
+      return (tileType === "bomb" || tileType === "bonus") && !isFaceUp;
+    });
+
+    if (unrevealedSpecialTiles.length > 0) {
+      console.log(
+        `Found ${unrevealedSpecialTiles.length} unrevealed special tiles. Auto-revealing...`
+      );
+
+      // Reveal each special tile
+      unrevealedSpecialTiles.forEach((tile) => {
+        // Get the face-down image
+        const faceDownImg = tile.querySelector(".tile-face-down");
+
+        // Read the muted opacity value from CSS variable
+        const mutedOpacity = getComputedStyle(document.documentElement)
+          .getPropertyValue("--tile-muted-opacity")
+          .trim();
+
+        // Reveal with muted opacity
+        faceDownImg.style.opacity = mutedOpacity;
+
+        // Update state
+        tile.dataset.isFaceUp = "true";
+        tile.dataset.isMatched = "true";
+        tile.classList.add("tile-muted");
+
+        console.log(
+          `Auto-revealed ${tile.dataset.type} at position ${tile.dataset.squareNum}`
+        );
+      });
+    }
+
+    // After 3 seconds, apply halftone to all special tiles (including previously revealed ones)
+    // This runs regardless of whether special tiles were unrevealed or clicked earlier
+    setTimeout(() => {
+      const allSpecialTiles = Array.from(allTiles).filter((tile) => {
+        const tileType = tile.dataset.type;
+        return tileType === "bomb" || tileType === "bonus";
+      });
+
+      allSpecialTiles.forEach((tile) => {
+        // Hide the face-down image completely
+        const faceDownImg = tile.querySelector(".tile-face-down");
+        faceDownImg.style.opacity = "0";
+
+        // Show the halftone overlay
+        const halftoneImg = tile.querySelector(".tile-halftone");
+        halftoneImg.style.opacity = "1";
+
+        console.log(
+          `Applied halftone to ${tile.dataset.type} at position ${tile.dataset.squareNum}`
+        );
+      });
+
+      console.log("🎮 GAME OVER - All tiles completed!");
+    }, 3000);
+  }
 }
 
 /**
@@ -1163,11 +1456,25 @@ function updateCharacterList(tileDataArray) {
   // Extract unique characters (filter out bombs/bonus and duplicates)
   const uniqueCharacters = [];
   const seenNames = new Set();
+  const seenCharacterKeys = new Set(); // Track character keys (e.g., "Jadis") not name_text
 
   for (const tileData of tileDataArray) {
-    if (tileData.type === 'gameTile' && tileData.name_text && !seenNames.has(tileData.name_text)) {
+    if (
+      tileData.type === "gameTile" &&
+      tileData.name_text &&
+      !seenNames.has(tileData.name_text)
+    ) {
       uniqueCharacters.push(tileData);
       seenNames.add(tileData.name_text);
+
+      // Find the character key that corresponds to this name_text
+      for (const characterKey in imageList) {
+        const characterImages = imageList[characterKey];
+        if (characterImages.length > 0 && characterImages[0].name_text === tileData.name_text) {
+          seenCharacterKeys.add(characterKey);
+          break;
+        }
+      }
     }
   }
 
@@ -1175,8 +1482,8 @@ function updateCharacterList(tileDataArray) {
   // Get all available witch names from imageList
   const allWitchNames = Object.keys(imageList);
 
-  // Filter out witches already in the game
-  const availableDecoys = allWitchNames.filter(name => !seenNames.has(name));
+  // Filter out witches already in the game (using character keys, not name_text)
+  const availableDecoys = allWitchNames.filter((name) => !seenCharacterKeys.has(name));
 
   // Randomly select 2 decoys
   const numDecoys = Math.min(2, availableDecoys.length);
@@ -1193,7 +1500,7 @@ function updateCharacterList(tileDataArray) {
       const decoyData = {
         name_text: decoyImages[0].name_text,
         description_text: decoyImages[0].description_text,
-        type: 'decoy'
+        type: "decoy",
       };
       uniqueCharacters.push(decoyData);
     }
@@ -1203,13 +1510,14 @@ function updateCharacterList(tileDataArray) {
   shuffleArray(uniqueCharacters);
 
   // Create list items for each unique character
-  uniqueCharacters.forEach(character => {
+  uniqueCharacters.forEach((character) => {
     const characterItem = document.createElement("div");
     characterItem.className = "character-item";
 
     // Add data attributes for tracking
     characterItem.dataset.completed = "false";
     characterItem.dataset.characterName = character.name_text;
+    characterItem.dataset.characterType = character.type || "gameTile"; // Store type to identify decoys
 
     const characterName = document.createElement("div");
     characterName.className = "character-name";
@@ -1220,12 +1528,16 @@ function updateCharacterList(tileDataArray) {
     characterDesc.textContent = character.description_text;
 
     // Add click handler for character selection
-    characterItem.addEventListener('click', () => handleCharacterClick(characterItem));
+    characterItem.addEventListener("click", () =>
+      handleCharacterClick(characterItem)
+    );
 
     characterItem.appendChild(characterName);
     characterItem.appendChild(characterDesc);
     characterListDiv.appendChild(characterItem);
   });
 
-  console.log(`Character list updated: ${uniqueCharacters.length} unique characters`);
+  console.log(
+    `Character list updated: ${uniqueCharacters.length} unique characters`
+  );
 }

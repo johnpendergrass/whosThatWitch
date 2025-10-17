@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** Phase 3 Complete (v0.10) - Character Selection Working
+**Status:** v0.11 - Bug Fixes & Game Completion Logic Complete
 **Date Started:** October 11, 2025
-**Last Updated:** October 17, 2025
+**Last Updated:** October 17, 2025 22:30
 
 ## Project Concept
 
@@ -199,7 +199,7 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 
 ### Game Mechanics (Partially Implemented)
 
-**Current State (v0.10):**
+**Current State (v0.11):**
 - ✅ Grid displays with correct tile positions
 - ✅ Simplified square position system (left→right, top→bottom)
 - ✅ Group-based character selection with numeric groups
@@ -235,17 +235,20 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - ✅ **v0.10: Conditional hover tooltips (only show for completed witches)**
 - ✅ **v0.10: Character hover effect (orange → medium white)**
 - ✅ **v0.10: 2 decoy witches added to list (random from unused witches)**
+- ✅ **v0.11: Fixed duplicate witch names bug (character key vs display name)**
+- ✅ **v0.11: Fixed purple squares bug (unique pairId generation)**
+- ✅ **v0.11: Game completion detection working**
+- ✅ **v0.11: Decoy names struck through when all witches found**
+- ✅ **v0.11: Auto-reveal unrevealed special tiles at game end**
+- ✅ **v0.11: Halftone applied to all special tiles at completion**
 
 **To Be Implemented:**
-- ❌ Visual muting of completed witch tiles on grid
-- ❌ Hover on completed character name highlights both tiles on grid
-- ❌ Strikethrough decoy names when all real witches found
-- ❌ "WHO AM I?" banner at top of character list
-- ❌ Click counter (maybe)
-- ❌ Game win/completion detection
-- ❌ Victory screen
-- ❌ Bomb tile effects/penalties
-- ❌ Bonus tile rewards
+- ❌ Bomb tile effects/actions when clicked
+- ❌ Bonus tile effects/actions when clicked
+- ❌ Click counter implementation and display
+- ❌ Best score tracking and display
+- ❌ Celebration animation when game completes
+- ❌ Victory/completion message overlay
 
 ### Tile Selection & Placement Strategy (IMPLEMENTED v0.06)
 
@@ -297,8 +300,10 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - Metadata preserved for "Who's That Witch?" feature
 - Each game has variety of different characters
 
-**Why pairId:**
-- Explicit identification of matching pairs (uses group number)
+**Why pairId (v0.11 Update):**
+- Explicit identification of matching pairs
+- Uses unique sequential numbers (1, 2, 3...) not group numbers
+- v0.11 Fix: Group numbers caused collisions (multiple witches per group)
 - Easier debugging and pair detection
 - More maintainable than object reference comparison
 - Can filter/find pairs: `gameTiles.filter(t => t.pairId === 5)`
@@ -351,7 +356,7 @@ Math works perfectly for all three grid sizes:
 
 ## Current Implementation Status
 
-**Completed (v0.09 - Game Mechanics Phase 1 & 2):**
+**Completed (v0.11 - Core Game Complete with Bug Fixes):**
 - ✅ Screen and board layout (950×714, 502×502)
 - ✅ Grid system with three difficulties
 - ✅ Simplified square position arrays (left→right, top→bottom)
@@ -391,12 +396,22 @@ Math works perfectly for all three grid sizes:
 - ✅ Game state machine (WAITING_FIRST → WAITING_SECOND → CHECKING_MATCH)
 - ✅ Golden glow highlight for selected tiles
 - ✅ Bug fix: Special tile click now properly hides previously selected gameTiles
+- ✅ **v0.10: Character names clickable and validation working**
+- ✅ **v0.10: Success/error tooltip system with smart timing**
+- ✅ **v0.10: Completed characters turn yellow with checkmark**
+- ✅ **v0.10: Hover on completed character highlights tiles**
+- ✅ **v0.10: Decoy witch system (2 random unused witches)**
+- ✅ **v0.11: Fixed duplicate witch names bug (seenCharacterKeys)**
+- ✅ **v0.11: Fixed purple squares bug (unique sequential pairIds)**
+- ✅ **v0.11: Game completion detection and decoy strikethrough**
+- ✅ **v0.11: Auto-reveal and halftone special tiles at game end**
 
-**Next Priority (Phase 3 - Character Selection):**
-- 🎯 Make character names in list clickable
-- 🎯 Character identification validation
-- 🎯 Handle correct vs incorrect character selection
-- 🎯 Visual feedback for character click
+**Next Priority (Phase 4 - Special Tile Actions & Polish):**
+- 🎯 Implement bomb tile effects/penalties
+- 🎯 Implement bonus tile effects/rewards
+- 🎯 Add click counter display
+- 🎯 Add best score tracking
+- 🎯 Add celebration animation
 
 **Not Started:**
 - ❌ Better tile back images (current are placeholder broom designs)
