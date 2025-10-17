@@ -5,6 +5,11 @@
   box-sizing: border-box;
 }
 
+/* CSS Variables */
+:root {
+  --tile-muted-opacity: 0.5;
+}
+
 /* Body styling */
 body {
   font-family: "Arial", sans-serif;
@@ -28,7 +33,7 @@ body {
 #game-title {
   position: absolute;
   top: 25px;
-  left: 50%;
+  left: 32%;
   transform: translateX(-50%);
   font-family: "Creepster", cursive;
   font-size: 62px;
@@ -36,7 +41,7 @@ body {
   text-shadow: 0 0 20px #7b2d8e, 0 0 40px #7b2d8e;
   letter-spacing: 0.12em;
   z-index: 100;
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
 }
 
@@ -44,13 +49,13 @@ body {
 #game-subtitle {
   position: absolute;
   top: 110px;
-  left: 50%;
+  left: 55%;
   transform: translateX(-50%);
   font-family: "Arial", sans-serif;
   font-size: 20px;
   color: #ff8c42;
   z-index: 100;
-  text-align: center;
+  text-align: left;
   width: 90%;
   line-height: 1.4;
 }
@@ -95,7 +100,55 @@ body {
   background-color: white;
 }
 
-/* Tile images */
+/* Tile container - holds both face-up and face-down images */
+.tile-container {
+  position: absolute;
+  cursor: pointer;
+}
+
+/* Selected tile highlight - golden glow effect */
+.tile-selected {
+  box-shadow: 0 0 15px 5px gold, 0 0 25px 8px rgba(255, 215, 0, 0.6);
+  border-radius: 4px;
+  z-index: 10;
+}
+
+/* 
+NOTE that to change the opacity of the muted tile, you can change the value of the --tile-muted-opacity variable in the :root selector. The item just below this comment is NOT where you change the opacity of the muted tile.
+
+Which is at the top of the css file, and looks like this:
+
+:root {
+--tile-muted-opacity: 0.5;
+}
+
+CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
+*/
+
+/* Muted tile - for completed/used tiles */
+.tile-muted .tile-face-down {
+  opacity: var(--tile-muted-opacity);
+}
+
+/* Face-up image (bottom layer) */
+.tile-face-up {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Face-down image (top layer, covers face-up) */
+.tile-face-down {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Legacy tile-image class (kept for compatibility) */
 .tile-image {
   position: absolute;
 }
@@ -117,7 +170,7 @@ body {
   max-height: 100%;
   color: #ffffff;
   font-size: 16px;
-  padding: 30px 30px 60px 20px;
+  padding: 60px 30px 60px 20px;
   box-sizing: border-box;
   overflow-y: auto;
 }

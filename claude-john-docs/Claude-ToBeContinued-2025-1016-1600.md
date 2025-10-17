@@ -84,7 +84,7 @@ whosThatWitch/
 │   ├── 99sized/                            # 106 + 1 bomb + 1 bonus (99×99 images)
 │   ├── 124sized/                           # 106 + 1 bomb + 1 bonus (124×124 images)
 │   ├── 166sized/                           # 106 + 1 bomb + 1 bonus (166×166 images)
-│   └── tileBack/                           # NEW: Button images and tile back images
+│   └── other/                              # NEW: Button images and tile back images
 │       ├── _easyButton_80x30.png
 │       ├── _mediumButton_80x30.png
 │       ├── _hardButton_80x30.png
@@ -274,9 +274,9 @@ characterItem.score-total-row: [TOTAL SCORE:] [+87]
 ### Face-Down Tile Images Available
 
 Already created and ready to integrate:
-- `assets/tileBack/_back_wBroom_99.png` (99×99) for HARD
-- `assets/tileBack/_back_wBroom_124.png` (124×124) for MEDIUM
-- `assets/tileBack/_back_wBroom_166.png` (166×166) for EASY
+- `assets/other/_back_wBroom_99.png` (99×99) for HARD
+- `assets/other/_back_wBroom_124.png` (124×124) for MEDIUM
+- `assets/other/_back_wBroom_166.png` (166×166) for EASY
 
 ### Three-Click State Machine
 
@@ -343,7 +343,7 @@ Files changed:
 - css/style.css (all UI styling, character→ renaming)
 - js/whosThatWitch.js (character→ renaming, virtual scoring entries)
 - json/gameConfig.json (difficulty order)
-- assets/tileBack/ (new button images)
+- assets/other/ (new button images)
 - claude-john-docs/specifications.md (updated)
 - claude-john-docs/Claude-ToBeContinued-2025-1016-1600.md (this file)
 ```

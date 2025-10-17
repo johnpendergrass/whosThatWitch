@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** UI Complete (v0.07), Next: Tile Flip & Three-Click Game Mechanic
+**Status:** Game Mechanics Phase 1 & 2 Complete (v0.09), Next: Character Selection (Phase 3)
 **Date Started:** October 11, 2025
-**Last Updated:** October 16, 2025 - 16:00
+**Last Updated:** October 16, 2025 - 18:30
 
 ## Project Concept
 
@@ -199,7 +199,7 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 
 ### Game Mechanics (Partially Implemented)
 
-**Current State:**
+**Current State (v0.09):**
 - ✅ Grid displays with correct tile positions
 - ✅ Simplified square position system (left→right, top→bottom)
 - ✅ Group-based character selection with numeric groups
@@ -211,20 +211,31 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - ✅ GameTile pairs avoid adjacency (100-retry algorithm)
 - ✅ Grid lines draw between tiles
 - ✅ Three difficulty levels function
-- ✅ Witch list UI displays to the right
-- ✅ Hover tooltips show witch descriptions
+- ✅ Character list UI displays to the right
+- ✅ Hover tooltips show character descriptions
 - ✅ Code constants as single source of truth
 - ✅ x/y calculated from row/col (no JSON positions)
+- ✅ Clickable tiles with event listeners
+- ✅ Tile flip interaction (face-down ↔ face-up with animation)
+- ✅ Face-down tile back images integrated (broom design)
+- ✅ Match detection (compare pairIds)
+- ✅ Two-tile matching game logic
+- ✅ Bomb/bonus tile click handling (immediate, no matching)
+- ✅ Special tiles stay visible but muted after click
+- ✅ Game state machine prevents invalid clicks
+- ✅ Golden glow highlight on selected tiles
+- ✅ CSS variable system for muted opacity
+- ✅ **v0.09: Special tile click properly resets previous gameTile selections**
 
 **To Be Implemented:**
-- ❌ Clickable tiles (event listeners)
-- ❌ Tile flip interaction (face-down → face-up)
-- ❌ Face-down tile design
-- ❌ Match detection
-- ❌ Bomb tile click handling
-- ❌ Bonus tile functionality
-- ❌ Witch identification input/validation
-- ❌ Scoring system
+- ❌ Character name clicking (Phase 3)
+- ❌ Character identification validation (Phase 3)
+- ❌ Mark completed pairs permanently (Phase 4)
+- ❌ Scoring system (click tracking, points calculation)
+- ❌ Game win/completion detection
+- ❌ Victory screen
+- ❌ Bomb tile scoring/penalties
+- ❌ Bonus tile rewards
 
 ### Tile Selection & Placement Strategy (IMPLEMENTED v0.06)
 
@@ -330,7 +341,7 @@ Math works perfectly for all three grid sizes:
 
 ## Current Implementation Status
 
-**Completed (v0.07 - UI Polish):**
+**Completed (v0.09 - Game Mechanics Phase 1 & 2):**
 - ✅ Screen and board layout (950×714, 502×502)
 - ✅ Grid system with three difficulties
 - ✅ Simplified square position arrays (left→right, top→bottom)
@@ -359,20 +370,30 @@ Math works perfectly for all three grid sizes:
 - ✅ Integrated scoring summary (Clicks, Total Score)
 - ✅ Difficulty buttons relocated to bottom of status box
 - ✅ Consistent "character" naming throughout codebase
-- ✅ Face-down tile back images created (ready to integrate)
+- ✅ Face-down tile back images integrated
+- ✅ Two-layer tile DOM structure (face-up + face-down overlay)
+- ✅ Click event handlers for tiles
+- ✅ Tile reveal animation (opacity transition)
+- ✅ Match detection (compare pairIds)
+- ✅ Non-matching tiles flip back after delay
+- ✅ Special tile handling (bomb/bonus show immediately, no matching)
+- ✅ Special tiles stay visible but muted (CSS variable system)
+- ✅ Game state machine (WAITING_FIRST → WAITING_SECOND → CHECKING_MATCH)
+- ✅ Golden glow highlight for selected tiles
+- ✅ Bug fix: Special tile click now properly hides previously selected gameTiles
 
-**Next Priority (v0.08 - Game Mechanics):**
-- 🎯 Three-click game mechanic implementation
-- 🎯 Tile flip interaction (face-down ↔ face-up)
-- 🎯 Click event handlers for tiles and character names
-- 🎯 Match detection and validation
+**Next Priority (Phase 3 - Character Selection):**
+- 🎯 Make character names in list clickable
 - 🎯 Character identification validation
-- 🎯 Scoring system (dynamic updates)
+- 🎯 Handle correct vs incorrect character selection
+- 🎯 Visual feedback for character click
 
 **Not Started:**
-- ❌ Tile flip animation/transition effects
-- ❌ Bomb tile click handling
-- ❌ Bonus tile functionality
+- ❌ Better tile back images (current are placeholder broom designs)
+- ❌ Better bomb tile imagery (needs clearer penalty visual)
+- ❌ Better bonus tile imagery (needs clearer reward visual)
+- ❌ Bomb tile effect/penalty mechanics (design decision needed)
+- ❌ Bonus tile effect/reward mechanics (design decision needed)
 - ❌ Game win/completion detection
 - ❌ Victory screen
 

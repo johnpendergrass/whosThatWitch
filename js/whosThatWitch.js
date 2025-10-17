@@ -8,6 +8,10 @@ let tileData = null;
 let imageList = null;
 let groupedWitches = null;  // Images organized by group number
 
+// Game state variables for tile interaction
+let selectedTiles = [];  // Currently selected tiles (max 2)
+let gameState = 'WAITING_FOR_FIRST_TILE';  // Track game flow
+
 // Configuration file paths (easy to find and change)
 const gameConfigFile = "json/gameConfig.json";
 const tileSizesFile = "json/tileSizes.json";
@@ -178,9 +182,9 @@ function setupButtons() {
 
   // Map difficulty IDs to button images
   const buttonImages = {
-    "easyTiles": "assets/tileBack/_easyButton_80x30.png",
-    "mediumTiles": "assets/tileBack/_mediumButton_80x30.png",
-    "hardTiles": "assets/tileBack/_hardButton_80x30.png"
+    "easyTiles": "assets/other/_easyButton_80x30.png",
+    "mediumTiles": "assets/other/_mediumButton_80x30.png",
+    "hardTiles": "assets/other/_hardButton_80x30.png"
   };
 
   // Create image buttons from config
@@ -617,6 +621,10 @@ function drawGrid(difficultyId) {
   // Clear existing content
   clearBoard();
 
+  // Reset game state
+  selectedTiles = [];
+  gameState = 'WAITING_FOR_FIRST_TILE';
+
   const config = tileData[difficultyId];
   const gridSize = config.gridSize;
   const tileSize = config.tileSize;
@@ -632,11 +640,14 @@ function drawGrid(difficultyId) {
   // Assign tiles to positions with adjacency constraints
   const positionToTileMap = assignTilesToPositions(tilesByType, squares);
 
+  // Calculate back image path (same for all tiles at this difficulty)
+  const backImagePath = `assets/other/_back_wBroom_${tileSize}.png`;
+
   // Draw grid lines
   drawGridLines(gridSize, tileSize, lineSize, lineColor);
 
   // Draw tiles using squares (calculate x/y from row/col)
-  drawTiles(squares, tileSize, lineSize, positionToTileMap);
+  drawTiles(squares, tileSize, lineSize, positionToTileMap, backImagePath);
 
   // Update character list (extract all tiles from map)
   const allTiles = positionToTileMap.filter(t => t !== null);
@@ -679,13 +690,14 @@ function drawGridLines(gridSize, tileSize, lineSize, lineColor) {
 }
 
 /**
- * Draw tiles with images
+ * Draw tiles with images (two-layer structure: face-up + face-down overlay)
  * @param {Array} squares - Grid squares with {num, row, col}
  * @param {number} tileSize - Size of tiles
  * @param {number} lineSize - Size of grid lines
  * @param {Array} positionToTileMap - Array mapping square number to tile object
+ * @param {string} backImagePath - Path to back image (same for all tiles)
  */
-function drawTiles(squares, tileSize, lineSize, positionToTileMap) {
+function drawTiles(squares, tileSize, lineSize, positionToTileMap, backImagePath) {
   const board = document.getElementById("board");
 
   squares.forEach((square) => {
@@ -701,26 +713,239 @@ function drawTiles(squares, tileSize, lineSize, positionToTileMap) {
     const x = square.col * (tileSize + lineSize);
     const y = square.row * (tileSize + lineSize);
 
-    const img = document.createElement("img");
-    img.className = "tile-image";
-    img.src = tileData.imagePath;
-    img.alt = `Tile ${square.num}`;
-    img.style.left = `${x}px`;
-    img.style.top = `${y}px`;
-    img.style.width = `${tileSize}px`;
-    img.style.height = `${tileSize}px`;
+    // Create container div for this tile position
+    const tileContainer = document.createElement("div");
+    tileContainer.className = "tile-container";
+    tileContainer.style.left = `${x}px`;
+    tileContainer.style.top = `${y}px`;
+    tileContainer.style.width = `${tileSize}px`;
+    tileContainer.style.height = `${tileSize}px`;
 
-    // Store metadata on the img element for future use
-    img.dataset.type = tileData.type;
+    // Store metadata and state on the container
+    tileContainer.dataset.squareNum = square.num;
+    tileContainer.dataset.type = tileData.type;
+    tileContainer.dataset.isFaceUp = "false"; // Start face-down
+    tileContainer.dataset.isMatched = "false";
+
+    if (tileData.pairId) {
+      tileContainer.dataset.pairId = tileData.pairId;
+    }
     if (tileData.name_text) {
-      img.dataset.nameText = tileData.name_text;
+      tileContainer.dataset.nameText = tileData.name_text;
     }
     if (tileData.description_text) {
-      img.dataset.descriptionText = tileData.description_text;
+      tileContainer.dataset.descriptionText = tileData.description_text;
     }
 
-    board.appendChild(img);
+    // Create face-up image (bottom layer - the witch/character)
+    const faceUpImg = document.createElement("img");
+    faceUpImg.className = "tile-face-up";
+    faceUpImg.src = tileData.imagePath;
+    faceUpImg.alt = `Tile ${square.num}`;
+    faceUpImg.style.width = `${tileSize}px`;
+    faceUpImg.style.height = `${tileSize}px`;
+
+    // Create face-down image (top layer - the back with broom)
+    const faceDownImg = document.createElement("img");
+    faceDownImg.className = "tile-face-down";
+    faceDownImg.src = backImagePath;
+    faceDownImg.alt = "Face down";
+    faceDownImg.style.width = `${tileSize}px`;
+    faceDownImg.style.height = `${tileSize}px`;
+
+    // Add both images to container
+    tileContainer.appendChild(faceUpImg);
+    tileContainer.appendChild(faceDownImg);
+
+    // Add click event listener
+    tileContainer.addEventListener('click', () => handleTileClick(tileContainer));
+
+    // Add container to board
+    board.appendChild(tileContainer);
   });
+}
+
+/**
+ * Handle tile click event
+ * @param {HTMLElement} tileContainer - The clicked tile container
+ */
+function handleTileClick(tileContainer) {
+  // Block clicks if we're checking a match
+  if (gameState === 'CHECKING_MATCH') {
+    console.log("Currently checking match, ignoring click");
+    return;
+  }
+
+  // Check if tile is face-down and not already matched
+  const isFaceUp = tileContainer.dataset.isFaceUp === "true";
+  const isMatched = tileContainer.dataset.isMatched === "true";
+
+  if (isFaceUp || isMatched) {
+    console.log("Tile already face-up or matched, ignoring click");
+    return;
+  }
+
+  // Block if we already have 2 tiles selected
+  if (selectedTiles.length >= 2) {
+    console.log("Already have 2 tiles selected, ignoring click");
+    return;
+  }
+
+  // Reveal the tile
+  revealTile(tileContainer);
+
+  // Check if this is a special tile (bomb or bonus)
+  const tileType = tileContainer.dataset.type;
+  if (tileType === 'bomb' || tileType === 'bonus') {
+    // Special tiles don't need matching - handle immediately
+    gameState = 'CHECKING_MATCH';  // Block other clicks
+    setTimeout(() => handleSpecialTile(tileContainer), 1000);
+    return;
+  }
+
+  // Regular gameTile - proceed with matching logic
+  if (selectedTiles.length === 1) {
+    gameState = 'WAITING_FOR_SECOND_TILE';
+  } else if (selectedTiles.length === 2) {
+    gameState = 'CHECKING_MATCH';
+    // Check for match after brief delay to allow animation to complete
+    setTimeout(() => checkForMatch(), 500);
+  }
+}
+
+/**
+ * Reveal a tile by animating the face-down image to transparent
+ * @param {HTMLElement} tileContainer - The tile container to reveal
+ */
+function revealTile(tileContainer) {
+  // Get the face-down image
+  const faceDownImg = tileContainer.querySelector('.tile-face-down');
+
+  // Animate to transparent (reveal the face-up image underneath)
+  faceDownImg.style.opacity = '0';
+
+  // Update state
+  tileContainer.dataset.isFaceUp = "true";
+
+  // Add highlight effect
+  tileContainer.classList.add('tile-selected');
+
+  // Add to selected tiles array
+  selectedTiles.push(tileContainer);
+
+  console.log(`Tile ${tileContainer.dataset.squareNum} revealed (type: ${tileContainer.dataset.type}, pairId: ${tileContainer.dataset.pairId})`);
+}
+
+/**
+ * Handle special tile (bomb or bonus) - keeps it visible but muted
+ * @param {HTMLElement} tileContainer - The special tile container
+ */
+function handleSpecialTile(tileContainer) {
+  const tileType = tileContainer.dataset.type;
+  console.log(`Handling special tile: ${tileType} at position ${tileContainer.dataset.squareNum}`);
+
+  // Get the face-down image
+  const faceDownImg = tileContainer.querySelector('.tile-face-down');
+
+  // Read the muted opacity value from CSS variable
+  const mutedOpacity = getComputedStyle(document.documentElement)
+    .getPropertyValue('--tile-muted-opacity').trim();
+
+  // Set opacity to match CSS variable (overrides the inline 0 from revealTile)
+  faceDownImg.style.opacity = mutedOpacity;
+
+  // Tile stays face-up
+  tileContainer.dataset.isFaceUp = "true";
+
+  // Remove golden highlight and add muted styling
+  tileContainer.classList.remove('tile-selected');
+  tileContainer.classList.add('tile-muted');
+
+  // Mark as matched so it can't be clicked again
+  tileContainer.dataset.isMatched = "true";
+
+  // Hide any previously selected gameTiles before clearing
+  selectedTiles.forEach(tile => {
+    if (tile !== tileContainer && tile.dataset.type === 'gameTile') {
+      const faceDownImg = tile.querySelector('.tile-face-down');
+      faceDownImg.style.opacity = '1';
+      tile.dataset.isFaceUp = "false";
+      tile.classList.remove('tile-selected');
+    }
+  });
+
+  // Clear selected tiles
+  selectedTiles = [];
+
+  // Reset game state
+  gameState = 'WAITING_FOR_FIRST_TILE';
+
+  console.log(`${tileType} tile now muted and visible, ready for next selection`);
+}
+
+/**
+ * Check if the two selected tiles match
+ */
+function checkForMatch() {
+  if (selectedTiles.length !== 2) {
+    console.error("checkForMatch called without 2 tiles selected");
+    return;
+  }
+
+  const tile1 = selectedTiles[0];
+  const tile2 = selectedTiles[1];
+
+  // Get pairIds (only gameTiles have pairIds)
+  const pairId1 = tile1.dataset.pairId;
+  const pairId2 = tile2.dataset.pairId;
+
+  console.log(`Checking match: tile1 pairId=${pairId1}, tile2 pairId=${pairId2}`);
+
+  // Check if they match
+  if (pairId1 && pairId2 && pairId1 === pairId2) {
+    // MATCH!
+    console.log("✓ MATCH! Tiles stay revealed (Phase 3 will handle witch selection)");
+    // Reset state but keep tiles selected for Phase 3 (witch selection)
+    gameState = 'WAITING_FOR_WITCH_SELECTION';
+  } else {
+    // NO MATCH
+    console.log("✗ NO MATCH - hiding tiles after delay");
+    // Hide tiles after 1 second delay
+    setTimeout(() => hideNonMatchingTiles(), 1000);
+  }
+}
+
+/**
+ * Hide non-matching tiles (flip them back face-down)
+ */
+function hideNonMatchingTiles() {
+  if (selectedTiles.length !== 2) {
+    console.error("hideNonMatchingTiles called without 2 tiles");
+    return;
+  }
+
+  // Flip both tiles back
+  selectedTiles.forEach(tileContainer => {
+    // Get face-down image
+    const faceDownImg = tileContainer.querySelector('.tile-face-down');
+
+    // Animate back to opaque (hide face-up image)
+    faceDownImg.style.opacity = '1';
+
+    // Update state
+    tileContainer.dataset.isFaceUp = "false";
+
+    // Remove highlight
+    tileContainer.classList.remove('tile-selected');
+  });
+
+  // Clear selected tiles
+  selectedTiles = [];
+
+  // Reset game state
+  gameState = 'WAITING_FOR_FIRST_TILE';
+
+  console.log("Tiles hidden, ready for next selection");
 }
 
 /**
