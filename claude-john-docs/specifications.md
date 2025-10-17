@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** v0.11 - Bug Fixes & Game Completion Logic Complete
+**Status:** v0.12 - BOMB-A/BOMB-B Separation & Special Tile Setup Complete
 **Date Started:** October 11, 2025
-**Last Updated:** October 17, 2025 22:30
+**Last Updated:** October 17, 2025 23:45
 
 ## Project Concept
 
@@ -48,25 +48,28 @@ The game is designed to fit inside a parent Halloween minigames app. The parent 
 Three difficulty levels with different grid sizes:
 
 ### Easy (3×3 Grid)
-- **Tile Count:** 9 tiles (4 pairs + 1 bomb)
+- **Tile Count:** 9 tiles (4 pairs + 1 bonus)
 - **Tile Size:** 166×166 pixels
 - **Grid Lines:** 2px black lines between tiles
 - **Total Calculation:** 3×166 + 2×2 = 498 + 4 = 502px ✓
 - **Characters:** 4 different witches (+ 2 decoys in list)
+- **Special Tiles:** 1 bonus tile (no bombs)
 
 ### Medium (4×4 Grid)
-- **Tile Count:** 16 tiles (8 pairs)
+- **Tile Count:** 16 tiles (7 pairs + 1 BOMB-A + 1 bonus)
 - **Tile Size:** 124×124 pixels
 - **Grid Lines:** 2px black lines between tiles
 - **Total Calculation:** 4×124 + 3×2 = 496 + 6 = 502px ✓
-- **Characters:** 8 different witches (+ 2 decoys in list)
+- **Characters:** 7 different witches (+ 2 decoys in list)
+- **Special Tiles:** 1 BOMB-A tile, 1 bonus tile
 
 ### Hard (5×5 Grid)
-- **Tile Count:** 25 tiles (10 pairs + bombs/bonus)
+- **Tile Count:** 25 tiles (11 pairs + 1 BOMB-A + 1 BOMB-B + 1 bonus)
 - **Tile Size:** 99×99 pixels
 - **Grid Lines:** 2px black lines between tiles
 - **Total Calculation:** 5×99 + 4×2 = 495 + 8 = 503px (1px hidden under border)
-- **Characters:** 10 different witches (+ 2 decoys in list)
+- **Characters:** 11 different witches (+ 2 decoys in list)
+- **Special Tiles:** 1 BOMB-A tile, 1 BOMB-B tile, 1 bonus tile
 
 ## Asset Inventory
 
@@ -241,10 +244,15 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - ✅ **v0.11: Decoy names struck through when all witches found**
 - ✅ **v0.11: Auto-reveal unrevealed special tiles at game end**
 - ✅ **v0.11: Halftone applied to all special tiles at completion**
+- ✅ **v0.12: Bonus tile reveal effect (5 seconds, adjacent tiles glow)**
+- ✅ **v0.12: BOMB-A and BOMB-B separated into distinct types**
+- ✅ **v0.12: Dedicated handlers for each bomb type**
+- ✅ **v0.12: All special tiles get halftone overlay when clicked**
 
 **To Be Implemented:**
-- ❌ Bomb tile effects/actions when clicked
-- ❌ Bonus tile effects/actions when clicked
+- ❌ BOMB-A tile effect/action when clicked (handler ready, needs design)
+- ❌ BOMB-B tile effect/action when clicked (handler ready, needs design)
+- ❌ Special tile images (user has created bombTileA and bombTileB images)
 - ❌ Click counter implementation and display
 - ❌ Best score tracking and display
 - ❌ Celebration animation when game completes
@@ -356,7 +364,7 @@ Math works perfectly for all three grid sizes:
 
 ## Current Implementation Status
 
-**Completed (v0.11 - Core Game Complete with Bug Fixes):**
+**Completed (v0.12 - Core Game Complete, BOMB-A/BOMB-B Setup Ready):**
 - ✅ Screen and board layout (950×714, 502×502)
 - ✅ Grid system with three difficulties
 - ✅ Simplified square position arrays (left→right, top→bottom)
@@ -405,10 +413,15 @@ Math works perfectly for all three grid sizes:
 - ✅ **v0.11: Fixed purple squares bug (unique sequential pairIds)**
 - ✅ **v0.11: Game completion detection and decoy strikethrough**
 - ✅ **v0.11: Auto-reveal and halftone special tiles at game end**
+- ✅ **v0.12: Bonus tile reveal effect (5 seconds, adjacent tiles glow)**
+- ✅ **v0.12: BOMB-A and BOMB-B separated with dedicated handlers**
+- ✅ **v0.12: Fixed halftone not applying to bomb tiles**
+- ✅ **v0.12: All special tiles get halftone overlay when clicked**
 
-**Next Priority (Phase 4 - Special Tile Actions & Polish):**
-- 🎯 Implement bomb tile effects/penalties
-- 🎯 Implement bonus tile effects/rewards
+**Next Priority (Phase 4 - Special Tile Effects & Scoring):**
+- 🎯 Design and implement BOMB-A effect (handler ready)
+- 🎯 Design and implement BOMB-B effect (handler ready)
+- 🎯 Add/verify special tile images (bombTileA, bombTileB, bonusTile)
 - 🎯 Add click counter display
 - 🎯 Add best score tracking
 - 🎯 Add celebration animation

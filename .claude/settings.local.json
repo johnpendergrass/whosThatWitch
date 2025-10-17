@@ -9,7 +9,8 @@
       "Bash(python:*)",
       "Bash(file:*)",
       "Read(//mnt/d/dev/projects/halloween/john-claude-docs/**)",
-      "Read(//mnt/d/dev/projects/halloween/**)"
+      "Read(//mnt/d/dev/projects/halloween/**)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
