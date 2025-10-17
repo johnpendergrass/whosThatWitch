@@ -14,6 +14,9 @@ let gameState = "WAITING_FOR_FIRST_TILE"; // Track game flow
 let currentTileSize = null; // Track current difficulty's tile size for halftone images
 let bannerActivationCount = 0; // Track how many times "WHO AM I?" banner has been activated
 
+// Bonus tile configuration
+const BONUS_REVEAL_DURATION = 5000; // How long (ms) bonus tile reveals adjacent tiles
+
 // Configuration file paths (easy to find and change)
 const gameConfigFile = "json/gameConfig.json";
 const tileSizesFile = "json/tileSizes.json";
@@ -273,6 +276,76 @@ function areAdjacent(pos1, pos2, includeDiagonal = true) {
 }
 
 /**
+ * Get all adjacent tile containers for a given tile
+ * @param {HTMLElement} tileContainer - The tile container to find neighbors for
+ * @returns {Array} Array of adjacent tile container elements
+ */
+function getAdjacentTileContainers(tileContainer) {
+  // Get row and col from the tile's dataset
+  const squareNum = parseInt(tileContainer.dataset.squareNum);
+
+  // Find which squares array we're using by checking board size
+  const allTiles = document.querySelectorAll(".tile-container");
+  const gridSize = allTiles.length;
+
+  let squares;
+  if (gridSize === 9) {
+    squares = EASY_SQUARES;
+  } else if (gridSize === 16) {
+    squares = MEDIUM_SQUARES;
+  } else if (gridSize === 25) {
+    squares = HARD_SQUARES;
+  } else {
+    console.error(`Unknown grid size: ${gridSize}`);
+    return [];
+  }
+
+  // Find the current tile's position
+  const currentSquare = squares.find((s) => s.num === squareNum);
+  if (!currentSquare) {
+    console.error(`Could not find square ${squareNum}`);
+    return [];
+  }
+
+  const currentRow = currentSquare.row;
+  const currentCol = currentSquare.col;
+
+  // Find all adjacent positions (8 directions: up, down, left, right, and diagonals)
+  const adjacentContainers = [];
+
+  for (let rowOffset = -1; rowOffset <= 1; rowOffset++) {
+    for (let colOffset = -1; colOffset <= 1; colOffset++) {
+      // Skip the center tile (current tile itself)
+      if (rowOffset === 0 && colOffset === 0) continue;
+
+      const adjacentRow = currentRow + rowOffset;
+      const adjacentCol = currentCol + colOffset;
+
+      // Find the square at this position
+      const adjacentSquare = squares.find(
+        (s) => s.row === adjacentRow && s.col === adjacentCol
+      );
+
+      // If square exists, find its tile container
+      if (adjacentSquare) {
+        const adjacentTile = document.querySelector(
+          `.tile-container[data-square-num="${adjacentSquare.num}"]`
+        );
+        if (adjacentTile) {
+          adjacentContainers.push(adjacentTile);
+        }
+      }
+    }
+  }
+
+  console.log(
+    `Found ${adjacentContainers.length} adjacent tiles for position ${squareNum} (row ${currentRow}, col ${currentCol})`
+  );
+
+  return adjacentContainers;
+}
+
+/**
  * Get positions that are available (not filled and not adjacent to excluded positions)
  * @param {Array} allPositions - All grid positions
  * @param {Array} filledPositions - Already filled positions
@@ -356,7 +429,7 @@ function getSquaresForDifficulty(difficultyId) {
  * Select images for a difficulty level
  * @param {Object} difficultyConfig - Difficulty configuration from gameConfig
  * @param {number} tileSize - Size of tiles for this difficulty
- * @returns {Object} Object with {gameTiles, bombs, bonus} arrays
+ * @returns {Object} Object with {gameTiles, bombsA, bombsB, bonus} arrays
  */
 function selectImagesForDifficulty(difficultyConfig, tileSize) {
   const tiles = [];
@@ -419,13 +492,23 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
     tiles.push(tileData); // Same object reference for matching
   }
 
-  // Build separate arrays for bombs
-  const bombPath = buildImagePath("_bombTile", tileSize);
-  const bombArray = [];
-  for (let i = 0; i < bombTiles; i++) {
-    bombArray.push({
-      imagePath: bombPath,
-      type: "bomb",
+  // Build separate arrays for BOMB-A tiles (first bomb)
+  const bombAArray = [];
+  if (bombTiles >= 1) {
+    const bombAPath = buildImagePath("_bombTileA", tileSize);
+    bombAArray.push({
+      imagePath: bombAPath,
+      type: "bombA",
+    });
+  }
+
+  // Build separate arrays for BOMB-B tiles (second bomb, Hard mode only)
+  const bombBArray = [];
+  if (bombTiles >= 2) {
+    const bombBPath = buildImagePath("_bombTileB", tileSize);
+    bombBArray.push({
+      imagePath: bombBPath,
+      type: "bombB",
     });
   }
 
@@ -440,20 +523,21 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
   }
 
   console.log(
-    `Created tiles organized by type: ${imageTiles} gameTiles (${uniqueImagesNeeded} pairs) + ${bombTiles} bombs + ${bonusTiles} bonus`
+    `Created tiles organized by type: ${imageTiles} gameTiles (${uniqueImagesNeeded} pairs) + ${bombAArray.length} bombA + ${bombBArray.length} bombB + ${bonusTiles} bonus`
   );
 
   // Return organized by type (no shuffle yet - will be done during placement)
   return {
     gameTiles: tiles,
-    bombs: bombArray,
+    bombsA: bombAArray,
+    bombsB: bombBArray,
     bonus: bonusArray,
   };
 }
 
 /**
  * Assign tiles to grid positions with adjacency constraints for special tiles
- * @param {Object} tilesByType - Object with {gameTiles, bombs, bonus}
+ * @param {Object} tilesByType - Object with {gameTiles, bombsA, bombsB, bonus}
  * @param {Array} squares - Grid squares with {num, row, col}
  * @returns {Array} Array where index = position number, value = tile object
  */
@@ -462,8 +546,8 @@ function assignTilesToPositions(tilesByType, squares) {
   const filledSquares = [];
   const excludeAdjacent = [];
 
-  // Step 1: Place special tiles (bombs, then bonus) with adjacency checking
-  const specialTiles = [...tilesByType.bombs, ...tilesByType.bonus];
+  // Step 1: Place special tiles (bombA, bombB, then bonus) with adjacency checking
+  const specialTiles = [...tilesByType.bombsA, ...tilesByType.bombsB, ...tilesByType.bonus];
 
   for (const specialTile of specialTiles) {
     const available = getAvailablePositions(
@@ -894,12 +978,22 @@ function handleTileClick(tileContainer) {
   // Reveal the tile
   revealTile(tileContainer);
 
-  // Check if this is a special tile (bomb or bonus)
+  // Check if this is a special tile (bombA, bombB, or bonus)
   const tileType = tileContainer.dataset.type;
-  if (tileType === "bomb" || tileType === "bonus") {
-    // Special tiles don't need matching - handle immediately
+  if (tileType === "bombA") {
+    // BOMB-A tile - use dedicated handler
     gameState = "CHECKING_MATCH"; // Block other clicks
-    setTimeout(() => handleSpecialTile(tileContainer), 1000);
+    setTimeout(() => handleBombATile(tileContainer), 1000);
+    return;
+  } else if (tileType === "bombB") {
+    // BOMB-B tile - use dedicated handler
+    gameState = "CHECKING_MATCH"; // Block other clicks
+    setTimeout(() => handleBombBTile(tileContainer), 1000);
+    return;
+  } else if (tileType === "bonus") {
+    // Bonus tile - use dedicated bonus handler
+    gameState = "CHECKING_MATCH"; // Block other clicks
+    setTimeout(() => handleBonusTile(tileContainer), 1000);
     return;
   }
 
@@ -939,7 +1033,8 @@ function revealTile(tileContainer) {
 }
 
 /**
- * Handle special tile (bomb or bonus) - keeps it visible but muted
+ * Handle special tile - shared helper function for bomb and bonus tiles
+ * Applies halftone overlay, reverts any other selected tiles
  * @param {HTMLElement} tileContainer - The special tile container
  */
 function handleSpecialTile(tileContainer) {
@@ -948,23 +1043,21 @@ function handleSpecialTile(tileContainer) {
     `Handling special tile: ${tileType} at position ${tileContainer.dataset.squareNum}`
   );
 
-  // Get the face-down image
+  // Get the face-down and halftone images
   const faceDownImg = tileContainer.querySelector(".tile-face-down");
+  const halftoneImg = tileContainer.querySelector(".tile-halftone");
 
-  // Read the muted opacity value from CSS variable
-  const mutedOpacity = getComputedStyle(document.documentElement)
-    .getPropertyValue("--tile-muted-opacity")
-    .trim();
+  // Hide face-down image completely
+  faceDownImg.style.opacity = "0";
 
-  // Set opacity to match CSS variable (overrides the inline 0 from revealTile)
-  faceDownImg.style.opacity = mutedOpacity;
+  // Show halftone overlay
+  halftoneImg.style.opacity = "1";
 
   // Tile stays face-up
   tileContainer.dataset.isFaceUp = "true";
 
-  // Remove golden highlight and add muted styling
+  // Remove golden highlight
   tileContainer.classList.remove("tile-selected");
-  tileContainer.classList.add("tile-muted");
 
   // Mark as matched so it can't be clicked again
   tileContainer.dataset.isMatched = "true";
@@ -986,8 +1079,143 @@ function handleSpecialTile(tileContainer) {
   gameState = "WAITING_FOR_FIRST_TILE";
 
   console.log(
-    `${tileType} tile now muted and visible, ready for next selection`
+    `${tileType} tile now complete with halftone overlay, ready for next selection`
   );
+}
+
+/**
+ * Handle BOMB-A tile click
+ * @param {HTMLElement} bombTileContainer - The BOMB-A tile container
+ */
+function handleBombATile(bombTileContainer) {
+  console.log(
+    `Handling BOMB-A tile at position ${bombTileContainer.dataset.squareNum}`
+  );
+
+  // For now, use the shared special tile handler
+  // TODO: Add custom BOMB-A effect here
+  handleSpecialTile(bombTileContainer);
+
+  console.log("BOMB-A effect complete (currently using default behavior)");
+}
+
+/**
+ * Handle BOMB-B tile click
+ * @param {HTMLElement} bombTileContainer - The BOMB-B tile container
+ */
+function handleBombBTile(bombTileContainer) {
+  console.log(
+    `Handling BOMB-B tile at position ${bombTileContainer.dataset.squareNum}`
+  );
+
+  // For now, use the shared special tile handler
+  // TODO: Add custom BOMB-B effect here
+  handleSpecialTile(bombTileContainer);
+
+  console.log("BOMB-B effect complete (currently using default behavior)");
+}
+
+/**
+ * Handle bonus tile click - reveals adjacent tiles temporarily
+ * @param {HTMLElement} bonusTileContainer - The bonus tile container
+ */
+function handleBonusTile(bonusTileContainer) {
+  console.log(
+    `Handling bonus tile at position ${bonusTileContainer.dataset.squareNum}`
+  );
+
+  // Step 1: If bonus was clicked as 2nd pick, revert the 1st pick
+  if (selectedTiles.length === 2) {
+    // Find the first pick (not the bonus tile)
+    const firstPick = selectedTiles.find((tile) => tile !== bonusTileContainer);
+
+    if (firstPick && firstPick.dataset.type === "gameTile") {
+      console.log(`Reverting 1st pick (tile ${firstPick.dataset.squareNum})`);
+
+      // Cover it again
+      const faceDownImg = firstPick.querySelector(".tile-face-down");
+      faceDownImg.style.opacity = "1";
+
+      // Remove from selected state
+      firstPick.dataset.isFaceUp = "false";
+      firstPick.classList.remove("tile-selected");
+    }
+  }
+
+  // Step 2: Apply flash animation to bonus tile itself
+  bonusTileContainer.classList.add("tile-bonus-flash");
+
+  // Remove flash class after animation completes (0.8s from CSS)
+  setTimeout(() => {
+    bonusTileContainer.classList.remove("tile-bonus-flash");
+  }, 800);
+
+  // Step 3: Get all adjacent tiles
+  const adjacentTiles = getAdjacentTileContainers(bonusTileContainer);
+
+  console.log(`Found ${adjacentTiles.length} adjacent tiles to bonus tile`);
+
+  // Step 4: Filter for only face-down, non-matched tiles
+  const tilesToReveal = adjacentTiles.filter((tile) => {
+    const isFaceUp = tile.dataset.isFaceUp === "true";
+    const isMatched = tile.dataset.isMatched === "true";
+    return !isFaceUp && !isMatched;
+  });
+
+  console.log(`Revealing ${tilesToReveal.length} covered adjacent tiles`);
+
+  // Step 5: Reveal each tile with bonus-revealed styling
+  tilesToReveal.forEach((tile) => {
+    const faceDownImg = tile.querySelector(".tile-face-down");
+    faceDownImg.style.opacity = "0";
+    tile.classList.add("tile-bonus-revealed");
+
+    console.log(
+      `  Temporarily revealing tile ${tile.dataset.squareNum} (${tile.dataset.type})`
+    );
+  });
+
+  // Step 6: Set timeout to re-cover tiles and finish bonus tile handling
+  setTimeout(() => {
+    console.log(
+      `Bonus reveal timeout (${BONUS_REVEAL_DURATION}ms) - re-covering tiles`
+    );
+
+    // Re-cover all temporarily revealed tiles
+    tilesToReveal.forEach((tile) => {
+      const faceDownImg = tile.querySelector(".tile-face-down");
+      faceDownImg.style.opacity = "1";
+      tile.classList.remove("tile-bonus-revealed");
+
+      console.log(`  Re-covered tile ${tile.dataset.squareNum}`);
+    });
+
+    // Apply halftone to bonus tile
+    const faceDownImg = bonusTileContainer.querySelector(".tile-face-down");
+    const halftoneImg = bonusTileContainer.querySelector(".tile-halftone");
+
+    // Hide face-down image completely
+    faceDownImg.style.opacity = "0";
+
+    // Show halftone overlay
+    halftoneImg.style.opacity = "1";
+
+    // Remove golden glow
+    bonusTileContainer.classList.remove("tile-selected");
+
+    // Mark bonus as matched/unclickable
+    bonusTileContainer.dataset.isMatched = "true";
+
+    console.log(`Bonus tile now complete with halftone overlay`);
+
+    // Clear selected tiles array
+    selectedTiles = [];
+
+    // Reset game state
+    gameState = "WAITING_FOR_FIRST_TILE";
+
+    console.log("Bonus tile handling complete, ready for next selection");
+  }, BONUS_REVEAL_DURATION);
 }
 
 /**
@@ -1143,6 +1371,7 @@ function handleCorrectMatch(characterItem) {
   successTooltip.style.fontSize = "14px";
   successTooltip.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.5)";
   successTooltip.style.fontWeight = "bold";
+  successTooltip.style.pointerEvents = "none"; // Prevent tooltip from interfering with hover detection
 
   // Add to character item
   characterItem.appendChild(successTooltip);
@@ -1150,6 +1379,7 @@ function handleCorrectMatch(characterItem) {
   // Track hover state and time elapsed
   let isHovering = true; // User just clicked, so they're hovering
   let minTimeElapsed = false;
+  let hoverCheckInterval = null; // Track interval for cleanup
 
   // Store reference to matched tiles for later use
   const matchedTiles = [...selectedTiles];
@@ -1173,9 +1403,14 @@ function handleCorrectMatch(characterItem) {
         halftoneImg.style.opacity = "1";
       });
 
-      // Clean up listeners
+      // Clean up listeners and interval
       characterItem.removeEventListener("mouseenter", handleMouseEnter);
       characterItem.removeEventListener("mouseleave", handleMouseLeave);
+
+      if (hoverCheckInterval) {
+        clearInterval(hoverCheckInterval);
+        hoverCheckInterval = null;
+      }
     }
   };
 
@@ -1192,6 +1427,21 @@ function handleCorrectMatch(characterItem) {
   // Add hover listeners
   characterItem.addEventListener("mouseenter", handleMouseEnter);
   characterItem.addEventListener("mouseleave", handleMouseLeave);
+
+  // Periodic hover verification to catch stuck hover state
+  // Check every 500ms if element is actually still being hovered
+  hoverCheckInterval = setInterval(() => {
+    const actuallyHovering = characterItem.matches(":hover");
+
+    // If we think we're hovering but actually aren't, fix the state
+    if (isHovering && !actuallyHovering) {
+      console.log(
+        "Detected stuck hover state - correcting and attempting tooltip removal"
+      );
+      isHovering = false;
+      tryRemoveTooltip();
+    }
+  }, 500);
 
   // After 2 seconds, mark time as elapsed and try to remove
   setTimeout(() => {
@@ -1381,12 +1631,12 @@ function checkGameCompletion() {
 
     console.log(`Strikethrough applied to ${decoyItems.length} decoy names`);
 
-    // Check for any unrevealed bomb/bonus tiles
+    // Check for any unrevealed bombA/bombB/bonus tiles
     const allTiles = document.querySelectorAll(".tile-container");
     const unrevealedSpecialTiles = Array.from(allTiles).filter((tile) => {
       const tileType = tile.dataset.type;
       const isFaceUp = tile.dataset.isFaceUp === "true";
-      return (tileType === "bomb" || tileType === "bonus") && !isFaceUp;
+      return (tileType === "bombA" || tileType === "bombB" || tileType === "bonus") && !isFaceUp;
     });
 
     if (unrevealedSpecialTiles.length > 0) {
@@ -1423,7 +1673,7 @@ function checkGameCompletion() {
     setTimeout(() => {
       const allSpecialTiles = Array.from(allTiles).filter((tile) => {
         const tileType = tile.dataset.type;
-        return tileType === "bomb" || tileType === "bonus";
+        return tileType === "bombA" || tileType === "bombB" || tileType === "bonus";
       });
 
       allSpecialTiles.forEach((tile) => {
@@ -1453,7 +1703,7 @@ function updateCharacterList(tileDataArray) {
   const characterListDiv = document.getElementById("character-list");
   characterListDiv.innerHTML = "";
 
-  // Extract unique characters (filter out bombs/bonus and duplicates)
+  // Extract unique characters (filter out bombsA/bombsB/bonus and duplicates)
   const uniqueCharacters = [];
   const seenNames = new Set();
   const seenCharacterKeys = new Set(); // Track character keys (e.g., "Jadis") not name_text
@@ -1470,7 +1720,10 @@ function updateCharacterList(tileDataArray) {
       // Find the character key that corresponds to this name_text
       for (const characterKey in imageList) {
         const characterImages = imageList[characterKey];
-        if (characterImages.length > 0 && characterImages[0].name_text === tileData.name_text) {
+        if (
+          characterImages.length > 0 &&
+          characterImages[0].name_text === tileData.name_text
+        ) {
           seenCharacterKeys.add(characterKey);
           break;
         }
@@ -1483,7 +1736,9 @@ function updateCharacterList(tileDataArray) {
   const allWitchNames = Object.keys(imageList);
 
   // Filter out witches already in the game (using character keys, not name_text)
-  const availableDecoys = allWitchNames.filter((name) => !seenCharacterKeys.has(name));
+  const availableDecoys = allWitchNames.filter(
+    (name) => !seenCharacterKeys.has(name)
+  );
 
   // Randomly select 2 decoys
   const numDecoys = Math.min(2, availableDecoys.length);
