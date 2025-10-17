@@ -337,20 +337,25 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
   // Get all available group numbers
   const allGroups = Object.keys(groupedWitches).map(Number);
 
+  // Select 2 MORE groups than needed to guarantee no duplicates after deduplication
+  const groupsToSelect = Math.min(uniqueImagesNeeded + 2, allGroups.length);
+
   // Randomly select groups
   const selectedGroups = [];
   const availableGroups = [...allGroups];
-  for (let i = 0; i < uniqueImagesNeeded; i++) {
+  for (let i = 0; i < groupsToSelect; i++) {
     if (availableGroups.length === 0) break;
     const randomIndex = Math.floor(Math.random() * availableGroups.length);
     selectedGroups.push(availableGroups[randomIndex]);
     availableGroups.splice(randomIndex, 1);
   }
 
-  console.log(`Selected ${selectedGroups.length} groups:`, selectedGroups);
+  console.log(`Selected ${selectedGroups.length} groups (need ${uniqueImagesNeeded} unique witches):`, selectedGroups);
 
   // For each selected group, pick one character and one image
   const selectedImages = [];
+  const seenWitchNames = new Set();  // Track unique witch names to prevent duplicates
+
   for (const groupNum of selectedGroups) {
     const charactersInGroup = groupedWitches[groupNum];
     const characterNames = Object.keys(charactersInGroup);
@@ -361,6 +366,12 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
 
     // Randomly select one image from this character
     const selectedImage = getRandomFromArray(characterImages);
+
+    // Check if we've already selected this witch name
+    if (seenWitchNames.has(selectedImage.name_text)) {
+      console.log(`Skipping duplicate witch: ${selectedImage.name_text} from group ${groupNum}`);
+      continue;  // Skip this duplicate
+    }
 
     // Build the image path
     const imagePath = buildImagePath(selectedImage.filename, tileSize);
@@ -374,8 +385,14 @@ function selectImagesForDifficulty(difficultyConfig, tileSize) {
       pairId: groupNum  // Unique identifier for matching pairs
     };
     selectedImages.push(tileData);
+    seenWitchNames.add(selectedImage.name_text);
 
-    console.log(`Group ${groupNum}: selected ${selectedCharacter} - ${selectedImage.filename}`);
+    console.log(`Group ${groupNum}: selected ${selectedCharacter} - ${selectedImage.filename} (${selectedImage.name_text})`);
+
+    // Stop if we have enough unique witches
+    if (selectedImages.length >= uniqueImagesNeeded) {
+      break;
+    }
   }
 
   // Create pairs (each image twice)
@@ -949,6 +966,193 @@ function hideNonMatchingTiles() {
 }
 
 /**
+ * Handle character name click from the list
+ * @param {HTMLElement} characterItem - The clicked character list item
+ */
+function handleCharacterClick(characterItem) {
+  // Only allow clicks when waiting for witch selection
+  if (gameState !== 'WAITING_FOR_WITCH_SELECTION') {
+    console.log("Not in witch selection state, ignoring character click");
+    return;
+  }
+
+  // Ignore clicks on already completed characters
+  if (characterItem.dataset.completed === "true") {
+    console.log("Character already completed, ignoring click");
+    return;
+  }
+
+  // Get the clicked character name
+  const clickedName = characterItem.dataset.characterName;
+
+  // Get the expected name from the selected tiles (both have same name)
+  const expectedName = selectedTiles[0].dataset.nameText;
+
+  console.log(`Character clicked: ${clickedName}, Expected: ${expectedName}`);
+
+  // Compare names
+  if (clickedName === expectedName) {
+    // CORRECT!
+    console.log("✓ CORRECT! Character identified");
+    setTimeout(() => handleCorrectMatch(characterItem), 500);
+  } else {
+    // INCORRECT
+    console.log("✗ INCORRECT! Wrong character selected");
+    handleIncorrectMatch(characterItem);
+  }
+}
+
+/**
+ * Handle correct character identification
+ * @param {HTMLElement} characterItem - The character list item that was correctly identified
+ */
+function handleCorrectMatch(characterItem) {
+  // Create success tooltip
+  const successTooltip = document.createElement("div");
+  successTooltip.className = "success-tooltip";
+  successTooltip.innerHTML = `Yes! I am witch <strong>${characterItem.dataset.characterName}</strong>!`;
+
+  // Position it relative to the character item
+  successTooltip.style.position = "absolute";
+  successTooltip.style.left = "0";
+  successTooltip.style.top = "25px";
+  successTooltip.style.background = "#006400";
+  successTooltip.style.color = "#ffffff";
+  successTooltip.style.padding = "10px";
+  successTooltip.style.border = "2px solid #00ff00";
+  successTooltip.style.borderRadius = "5px";
+  successTooltip.style.width = "300px";
+  successTooltip.style.zIndex = "1001";
+  successTooltip.style.lineHeight = "1.4";
+  successTooltip.style.fontSize = "14px";
+  successTooltip.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.5)";
+  successTooltip.style.fontWeight = "bold";
+
+  // Add to character item
+  characterItem.appendChild(successTooltip);
+
+  // Track hover state and time elapsed
+  let isHovering = true; // User just clicked, so they're hovering
+  let minTimeElapsed = false;
+
+  // Function to try removing tooltip (only if both conditions met)
+  const tryRemoveTooltip = () => {
+    if (minTimeElapsed && !isHovering) {
+      successTooltip.remove();
+      // Clean up listeners
+      characterItem.removeEventListener('mouseenter', handleMouseEnter);
+      characterItem.removeEventListener('mouseleave', handleMouseLeave);
+    }
+  };
+
+  // Mouse event handlers
+  const handleMouseEnter = () => {
+    isHovering = true;
+  };
+
+  const handleMouseLeave = () => {
+    isHovering = false;
+    tryRemoveTooltip();
+  };
+
+  // Add hover listeners
+  characterItem.addEventListener('mouseenter', handleMouseEnter);
+  characterItem.addEventListener('mouseleave', handleMouseLeave);
+
+  // After 2 seconds, mark time as elapsed and try to remove
+  setTimeout(() => {
+    minTimeElapsed = true;
+    tryRemoveTooltip();
+  }, 2000);
+
+  // Mark both tiles as matched (permanently completed)
+  selectedTiles.forEach(tileContainer => {
+    tileContainer.dataset.isMatched = "true";
+    // Tiles stay face-up with golden glow
+  });
+
+  // Update character item as completed
+  characterItem.dataset.completed = "true";
+
+  // Add checkmark to character name
+  const characterName = characterItem.querySelector('.character-name');
+  characterName.textContent = "✓ " + characterItem.dataset.characterName;
+
+  // Clear selected tiles array
+  selectedTiles = [];
+
+  // Reset game state
+  gameState = 'WAITING_FOR_FIRST_TILE';
+
+  console.log("Match completed successfully!");
+}
+
+/**
+ * Handle incorrect character identification
+ * @param {HTMLElement} characterItem - The character item that was incorrectly clicked
+ */
+function handleIncorrectMatch(characterItem) {
+  // Create temporary error tooltip
+  const errorTooltip = document.createElement("div");
+  errorTooltip.className = "error-tooltip";
+  errorTooltip.innerHTML = `Nope! <strong>${characterItem.dataset.characterName}</strong> is not my name!`;
+
+  // Position it relative to the character item
+  errorTooltip.style.position = "absolute";
+  errorTooltip.style.left = "0";
+  errorTooltip.style.top = "25px";
+  errorTooltip.style.background = "#8B0000";
+  errorTooltip.style.color = "#ffffff";
+  errorTooltip.style.padding = "10px";
+  errorTooltip.style.border = "2px solid #ff0000";
+  errorTooltip.style.borderRadius = "5px";
+  errorTooltip.style.width = "300px";
+  errorTooltip.style.zIndex = "1001";
+  errorTooltip.style.lineHeight = "1.4";
+  errorTooltip.style.fontSize = "14px";
+  errorTooltip.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.5)";
+  errorTooltip.style.fontWeight = "bold";
+
+  // Add to character item
+  characterItem.appendChild(errorTooltip);
+
+  // Track hover state and time elapsed
+  let isHovering = true; // User just clicked, so they're hovering
+  let minTimeElapsed = false;
+
+  // Function to try removing tooltip and hiding tiles (only if both conditions met)
+  const tryRemoveTooltip = () => {
+    if (minTimeElapsed && !isHovering) {
+      errorTooltip.remove();
+      hideNonMatchingTiles();
+      // Clean up listeners
+      characterItem.removeEventListener('mouseenter', handleMouseEnter);
+      characterItem.removeEventListener('mouseleave', handleMouseLeave);
+    }
+  };
+
+  // Mouse event handlers
+  const handleMouseEnter = () => {
+    isHovering = true;
+  };
+
+  const handleMouseLeave = () => {
+    isHovering = false;
+    tryRemoveTooltip();
+  };
+
+  // Add hover listeners
+  characterItem.addEventListener('mouseenter', handleMouseEnter);
+  characterItem.addEventListener('mouseleave', handleMouseLeave);
+
+  // After 2 seconds, mark time as elapsed and try to remove
+  setTimeout(() => {
+    minTimeElapsed = true;
+    tryRemoveTooltip();
+  }, 2000);
+}
+
+/**
  * Update the character list display
  * Shows unique characters in the current game
  */
@@ -967,69 +1171,61 @@ function updateCharacterList(tileDataArray) {
     }
   }
 
+  // Add 2 decoy witches (witches not in the game)
+  // Get all available witch names from imageList
+  const allWitchNames = Object.keys(imageList);
+
+  // Filter out witches already in the game
+  const availableDecoys = allWitchNames.filter(name => !seenNames.has(name));
+
+  // Randomly select 2 decoys
+  const numDecoys = Math.min(2, availableDecoys.length);
+  for (let i = 0; i < numDecoys; i++) {
+    const decoyName = getRandomFromArray(availableDecoys);
+
+    // Remove from available list to avoid duplicates
+    const index = availableDecoys.indexOf(decoyName);
+    availableDecoys.splice(index, 1);
+
+    // Get character data from imageList
+    const decoyImages = imageList[decoyName];
+    if (decoyImages && decoyImages.length > 0) {
+      const decoyData = {
+        name_text: decoyImages[0].name_text,
+        description_text: decoyImages[0].description_text,
+        type: 'decoy'
+      };
+      uniqueCharacters.push(decoyData);
+    }
+  }
+
+  // Shuffle the character list so decoys are mixed in
+  shuffleArray(uniqueCharacters);
+
   // Create list items for each unique character
   uniqueCharacters.forEach(character => {
     const characterItem = document.createElement("div");
     characterItem.className = "character-item";
 
+    // Add data attributes for tracking
+    characterItem.dataset.completed = "false";
+    characterItem.dataset.characterName = character.name_text;
+
     const characterName = document.createElement("div");
     characterName.className = "character-name";
     characterName.textContent = character.name_text;
-
-    const characterPoints = document.createElement("span");
-    characterPoints.className = "character-points";
-    characterPoints.textContent = "+10";
 
     const characterDesc = document.createElement("div");
     characterDesc.className = "character-description";
     characterDesc.textContent = character.description_text;
 
+    // Add click handler for character selection
+    characterItem.addEventListener('click', () => handleCharacterClick(characterItem));
+
     characterItem.appendChild(characterName);
-    characterItem.appendChild(characterPoints);
     characterItem.appendChild(characterDesc);
     characterListDiv.appendChild(characterItem);
   });
-
-  // Add spacing before scoring section
-  const spacer = document.createElement("div");
-  spacer.className = "character-spacer";
-  characterListDiv.appendChild(spacer);
-
-  // Add separator line
-  const separator1 = document.createElement("div");
-  separator1.className = "character-separator";
-  characterListDiv.appendChild(separator1);
-
-  // Add Clicks row
-  const clicksItem = document.createElement("div");
-  clicksItem.className = "character-item";
-  const clicksLabel = document.createElement("div");
-  clicksLabel.className = "score-label-text";
-  clicksLabel.textContent = "Clicks:";
-  const clicksValue = document.createElement("span");
-  clicksValue.className = "character-points";
-  clicksValue.textContent = "-13";
-  clicksItem.appendChild(clicksLabel);
-  clicksItem.appendChild(clicksValue);
-  characterListDiv.appendChild(clicksItem);
-
-  // Add separator line
-  const separator2 = document.createElement("div");
-  separator2.className = "character-separator";
-  characterListDiv.appendChild(separator2);
-
-  // Add Total Score row
-  const totalItem = document.createElement("div");
-  totalItem.className = "character-item score-total-row";
-  const totalLabel = document.createElement("div");
-  totalLabel.className = "score-label-text";
-  totalLabel.textContent = "TOTAL SCORE:";
-  const totalValue = document.createElement("span");
-  totalValue.className = "character-points";
-  totalValue.textContent = "+87";
-  totalItem.appendChild(totalLabel);
-  totalItem.appendChild(totalValue);
-  characterListDiv.appendChild(totalItem);
 
   console.log(`Character list updated: ${uniqueCharacters.length} unique characters`);
 }

@@ -170,7 +170,7 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
   max-height: 100%;
   color: #ffffff;
   font-size: 16px;
-  padding: 60px 30px 60px 20px;
+  padding: 40px 30px 60px 20px;
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -181,19 +181,24 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
   align-items: center;
   margin-bottom: 12px;
   position: relative;
-  cursor: help;
 }
 
 .character-name {
   font-weight: bold;
   color: #ff8c42;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-.character-points {
+/* Hover effect for non-completed characters only */
+.character-item[data-completed="false"] .character-name:hover {
+  color: #cccccc;
+}
+
+/* Completed character styling */
+.character-item[data-completed="true"] .character-name {
   color: #ffff00;
-  font-size: 16px;
-  font-family: "Arial", sans-serif;
-  margin-left: 10px;
+  cursor: help;
 }
 
 .character-description {
@@ -213,27 +218,7 @@ CHANGE IT AT THE TOP OF THE CSS FILE, NOT HERE!
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-.character-item:hover .character-description {
+/* Only show tooltip for completed characters */
+.character-item[data-completed="true"]:hover .character-description {
   display: block;
-}
-
-/* Character list separators and scoring */
-.character-spacer {
-  height: 0px;
-}
-
-.character-separator {
-  border-top: 1px solid #999;
-  margin: 15px 0 10px 0;
-}
-
-.score-label-text {
-  text-align: right;
-  color: #ffffff;
-  font-size: 16px;
-}
-
-.score-total-row {
-  font-weight: bold;
-  font-size: 20px;
 }

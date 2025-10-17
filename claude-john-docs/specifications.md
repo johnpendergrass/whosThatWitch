@@ -5,9 +5,9 @@
 **Project Name:** Who's That Witch?
 **Project Type:** Halloween-themed matching/memory tile game
 **Location:** `/games/whosThatWitch/`
-**Status:** Game Mechanics Phase 1 & 2 Complete (v0.09), Next: Character Selection (Phase 3)
+**Status:** Phase 3 Complete (v0.10) - Character Selection Working
 **Date Started:** October 11, 2025
-**Last Updated:** October 16, 2025 - 18:30
+**Last Updated:** October 17, 2025
 
 ## Project Concept
 
@@ -48,32 +48,32 @@ The game is designed to fit inside a parent Halloween minigames app. The parent 
 Three difficulty levels with different grid sizes:
 
 ### Easy (3×3 Grid)
-- **Tile Count:** 9 tiles
+- **Tile Count:** 9 tiles (4 pairs + 1 bomb)
 - **Tile Size:** 166×166 pixels
-- **Grid Lines:** 2px white lines between tiles
+- **Grid Lines:** 2px black lines between tiles
 - **Total Calculation:** 3×166 + 2×2 = 498 + 4 = 502px ✓
-- **Characters:** 9 different witches selected
+- **Characters:** 4 different witches (+ 2 decoys in list)
 
 ### Medium (4×4 Grid)
-- **Tile Count:** 16 tiles
+- **Tile Count:** 16 tiles (8 pairs)
 - **Tile Size:** 124×124 pixels
-- **Grid Lines:** 2px white lines between tiles
+- **Grid Lines:** 2px black lines between tiles
 - **Total Calculation:** 4×124 + 3×2 = 496 + 6 = 502px ✓
-- **Characters:** 16 different witches selected
+- **Characters:** 8 different witches (+ 2 decoys in list)
 
 ### Hard (5×5 Grid)
-- **Tile Count:** 25 tiles
+- **Tile Count:** 25 tiles (10 pairs + bombs/bonus)
 - **Tile Size:** 99×99 pixels
-- **Grid Lines:** 2px white lines between tiles
+- **Grid Lines:** 2px black lines between tiles
 - **Total Calculation:** 5×99 + 4×2 = 495 + 8 = 503px (1px hidden under border)
-- **Characters:** 20 witches selected (only 20 total available)
+- **Characters:** 10 different witches (+ 2 decoys in list)
 
 ## Asset Inventory
 
 ### Witch Character Images
 
-**Total Characters:** 32 unique witch characters
-**Total Images:** 109 individual photos (multiple photos per character)
+**Total Characters:** 25 unique witch characters (groups 1-25)
+**Total Images:** 106+ individual photos (multiple photos per character)
 **Source Material:** Movies, TV shows, books, anime, cartoons, mythology
 **Image Formats:** PNG with transparency (RGBA)
 
@@ -188,7 +188,7 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - **Screen Border:** White (#ffffff), 3px
 - **Board Background:** Purple (#553963)
 - **Board Border:** Purple ridge (#7b2d8e), 15px
-- **Grid Lines:** White, 2px
+- **Grid Lines:** Black, 2px
 - **Button Primary:** Orange (#ff6600)
 - **Button Hover:** Lighter orange (#ff8c42)
 
@@ -199,7 +199,7 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 
 ### Game Mechanics (Partially Implemented)
 
-**Current State (v0.09):**
+**Current State (v0.10):**
 - ✅ Grid displays with correct tile positions
 - ✅ Simplified square position system (left→right, top→bottom)
 - ✅ Group-based character selection with numeric groups
@@ -225,16 +225,26 @@ The entire game is controlled by configuration files, making it theme-agnostic:
 - ✅ Game state machine prevents invalid clicks
 - ✅ Golden glow highlight on selected tiles
 - ✅ CSS variable system for muted opacity
-- ✅ **v0.09: Special tile click properly resets previous gameTile selections**
+- ✅ Special tile click properly resets previous gameTile selections
+- ✅ **v0.10: Character names clickable (only during WAITING_FOR_WITCH_SELECTION)**
+- ✅ **v0.10: Character identification validation working**
+- ✅ **v0.10: Success tooltip (green) - "Yes! I am witch [name]!"**
+- ✅ **v0.10: Error tooltip (red) - "Nope! [name] is not my name!"**
+- ✅ **v0.10: Tooltips stay visible 2 seconds minimum + until mouse leaves**
+- ✅ **v0.10: Completed characters turn yellow with checkmark**
+- ✅ **v0.10: Conditional hover tooltips (only show for completed witches)**
+- ✅ **v0.10: Character hover effect (orange → medium white)**
+- ✅ **v0.10: 2 decoy witches added to list (random from unused witches)**
 
 **To Be Implemented:**
-- ❌ Character name clicking (Phase 3)
-- ❌ Character identification validation (Phase 3)
-- ❌ Mark completed pairs permanently (Phase 4)
-- ❌ Scoring system (click tracking, points calculation)
+- ❌ Visual muting of completed witch tiles on grid
+- ❌ Hover on completed character name highlights both tiles on grid
+- ❌ Strikethrough decoy names when all real witches found
+- ❌ "WHO AM I?" banner at top of character list
+- ❌ Click counter (maybe)
 - ❌ Game win/completion detection
 - ❌ Victory screen
-- ❌ Bomb tile scoring/penalties
+- ❌ Bomb tile effects/penalties
 - ❌ Bonus tile rewards
 
 ### Tile Selection & Placement Strategy (IMPLEMENTED v0.06)

@@ -5,7 +5,7 @@
       "tileSize": 99,
       "tileBackColor": "ivory",
       "lineSize": 2,
-      "lineColor": "white",
+      "lineColor": "black",
       "squarePositions": [
         { "square": 0, "x": 0, "y": 0 },
         { "square": 1, "x": 101, "y": 0 },
@@ -39,7 +39,7 @@
       "tileSize": 124,
       "tileBackColor": "green",
       "lineSize": 2,
-      "lineColor": "white",
+      "lineColor": "black",
       "squarePositions": [
         { "square": 0, "x": 0, "y": 0 },
         { "square": 1, "x": 126, "y": 0 },
@@ -64,7 +64,7 @@
       "tileSize": 166,
       "tileBackColor": "red",
       "lineSize": 2,
-      "lineColor": "white",
+      "lineColor": "black",
       "squarePositions": [
         { "square": 0, "x": 0, "y": 0 },
         { "square": 1, "x": 168, "y": 0 },
